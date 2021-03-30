@@ -1,7 +1,7 @@
 # Проект «Киноман»
 
 * Студент: [Ольга Бордадын](https://up.htmlacademy.ru/ecmascript/14/user/375607).
-* Наставник: `Неизвестно`.
+* Наставник: [Сергей Шершнев](https://htmlacademy.ru/profile/shv_sergey).
 
 ---
 
