@@ -3,7 +3,6 @@ import {createMenuTemplate} from './view/menu.js';
 import {createSortTemplate} from './view/sort.js';
 import {createFilmsListTemplate} from './view/films-list.js';
 import {createFilmsListExtraTemplate} from './view/films-list-extra.js';
-import {createCardDetailTemplate} from './view/card-detail.js';
 
 const render = (container, template, place) => {
   container.insertAdjacentHTML(place, template);
