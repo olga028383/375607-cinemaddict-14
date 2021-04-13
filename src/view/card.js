@@ -13,7 +13,7 @@ const createCardTemplate = (card = {}) => {
     name = '',
     rating = '',
     date = new Date(),
-    length = '',
+    runTime = '',
     genres = [],
     poster = 'made-for-each-other.png',
     description = '',
@@ -28,7 +28,7 @@ const createCardTemplate = (card = {}) => {
           <p class="film-card__rating">${rating}</p>
           <p class="film-card__info">
             <span class="film-card__year">${getYear(date)}</span>
-            <span class="film-card__duration">${getLengthTimeFormat(length)}</span>
+            <span class="film-card__duration">${getLengthTimeFormat(runTime)}</span>
             <span class="film-card__genre">${genres}</span>
           </p>
           <img src="./images/posters/${poster}" alt="" class="film-card__poster">

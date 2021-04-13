@@ -5,9 +5,7 @@ const getRandom = (min = 0, max = 1) => {
   return Math.floor(lower + Math.random() * (upper - lower + 1));
 };
 
-const generateArrayData = (lengthStart, data) => {
-  return new Array(getRandom(lengthStart, data.length - 1)).fill().map(() => data[getRandom(0, data.length - 1)]);
-};
+const generateArrayData = (lengthStart, data) => new Array(getRandom(lengthStart, data.length - 1)).fill(null).map(() => data[getRandom(0, data.length - 1)]);
 
 const getLengthTimeFormat = (numeric) => {
   const minTime = 60;
@@ -25,8 +23,8 @@ const getLengthTimeFormat = (numeric) => {
   return result.trim();
 };
 
-const clipText = (text, length) => {
-  return (text.length >= length) ? `${text.slice(0, length - 1)}...` : text;
-};
+const clipText = (text, length) => (text.length >= length) ? `${text.slice(0, length - 1)}...` : text;
 
-export {getRandom, generateArrayData, getLengthTimeFormat, clipText};
+const getRandomKeyFromArray = (data) => data[getRandom(0, data.length - 1)];
+
+export {getRandom, generateArrayData, getLengthTimeFormat, clipText, getRandomKeyFromArray};

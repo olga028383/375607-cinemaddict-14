@@ -1,7 +1,8 @@
-import {getRandom, generateArrayData} from '../util.js';
-import {Emotions} from '../constants.js';
+import {getRandom, generateArrayData, getRandomKeyFromArray} from '../util.js';
+import {getId} from '../lib.js';
+import {EMOTIONS} from '../constants.js';
 
-const Texts = [
+const TEXTS = [
   'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
   'Cras aliquet varius magna, non porta ligula feugiat eget.',
   'Fusce tristique felis at fermentum pharetra.',
@@ -15,7 +16,7 @@ const Texts = [
   'In rutrum ac purus sit amet tempus.',
 ];
 
-const Authors = [
+const AUTHORS = [
   'Tom Ford',
   'Sam Simon',
   'David Simon',
@@ -23,15 +24,19 @@ const Authors = [
   'Peter Sullivan',
 ];
 
-let count = 0;
+const NumbersGenerationData = {
+  YEAR_MIN: 2000,
+  YEAR_MAX: 2020,
+  MONTH_MAX: 13,
+};
 
 const generateComment = () => {
   return {
-    id: ++count,
-    text: generateArrayData(1, Texts).join(''),
-    emotion: Emotions[getRandom(0, Emotions.length - 1)],
-    author: Authors[getRandom(0, Authors.length - 1)],
-    date: new Date(getRandom(2000, 2020), getRandom(0, 13)),
+    id: getId(),
+    text: generateArrayData(1, TEXTS).join(''),
+    emotion: getRandomKeyFromArray(EMOTIONS),
+    author: getRandomKeyFromArray(AUTHORS),
+    date: new Date(getRandom(NumbersGenerationData.YEAR_MIN, NumbersGenerationData.YEAR_MAX), getRandom(0, NumbersGenerationData.MONTH_MAX)),
   };
 };
 

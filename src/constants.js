@@ -1,8 +1,8 @@
-const Emotions = [
+const EMOTIONS = [
   'smile',
   'sleeping',
   'puke',
   'angry',
 ];
 
-export {Emotions};
+export {EMOTIONS};

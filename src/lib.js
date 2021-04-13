@@ -1,11 +1,12 @@
+/* global require:readonly */
 import * as dayjs from 'dayjs';
 
-const getYear = (data) => {
-  return dayjs(data).year();
-};
+const nanoid = require('nanoid');
 
-const getDateFormat = (data, format) => {
-  return dayjs(data).format(format);
-};
+const getYear = (data) => dayjs(data).year();
 
-export {getYear, getDateFormat};
+const getDateFormat = (data, format) => dayjs(data).format(format);
+
+const getId = () => nanoid();
+
+export {getYear, getDateFormat, getId};

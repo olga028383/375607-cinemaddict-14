@@ -1,5 +1,5 @@
 import {getDateFormat} from '../lib.js';
-import {Emotions} from '../constants.js';
+import {EMOTIONS} from '../constants.js';
 
 const generateCommentTemplate = (comment = {}) => {
   const {
@@ -37,7 +37,7 @@ const generateInputTemplate = (emotion) => {
 };
 
 const generateInputListTemplate = () => {
-  return Emotions.map((emotion) => {
+  return EMOTIONS.map((emotion) => {
     return generateInputTemplate(emotion);
   }).join('');
 };

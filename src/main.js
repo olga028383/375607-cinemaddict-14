@@ -24,7 +24,7 @@ for (let i = 1; i <= COUNT_COMMENTS; i++) {
   comments.set(comment.id, comment);
 }
 
-const cards = new Array(COUNT_CARD_All).fill().map(() => generateCard());
+const cards = new Array(COUNT_CARD_All).fill(null).map(() => generateCard(comments));
 const filters = generateFilter(cards);
 
 const render = (container, template, place) => {
@@ -98,10 +98,9 @@ openModalButtons.forEach((button) => {
       || evt.target.classList.contains('film-card__title')
       || evt.target.classList.contains('film-card__comments')) {
 
-      const id = button.dataset.id;
-      const commentsCard = createCommentsTemplate(cards[id].comments.map((comment) => comments.get(comment)));
-      render(footer, createCardDetailTemplate(cards[id], commentsCard), 'beforeend');
 
+      const commentsCard = createCommentsTemplate(cards[0].comments.map((comment) => comments.get(comment)));
+      render(footer, createCardDetailTemplate(cards[0], commentsCard), 'beforeend');
     }
   });
 });

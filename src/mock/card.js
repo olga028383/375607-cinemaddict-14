@@ -1,7 +1,7 @@
-import {getRandom, generateArrayData} from '../util.js';
+import {getRandom, generateArrayData, getRandomKeyFromArray} from '../util.js';
+import {getId} from '../lib.js';
 
-const COUNT_COMMENTS = 30;
-const Names = [
+const NAMES = [
   'The Dance of Life',
   'Sagebrush Trail',
   'The Man with the Golden Arm',
@@ -11,7 +11,7 @@ const Names = [
   'Made for Each Other',
 ];
 
-const Posters = [
+const POSTERS = [
   'made-for-each-other.png',
   'popeye-meets-sinbad.png',
   'sagebrush-trail.jpg',
@@ -21,7 +21,7 @@ const Posters = [
   'the-man-with-the-golden-arm.jpg',
 ];
 
-const Texts = [
+const TEXTS = [
   'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
   'Cras aliquet varius magna, non porta ligula feugiat eget.',
   'Fusce tristique felis at fermentum pharetra.',
@@ -35,7 +35,7 @@ const Texts = [
   'In rutrum ac purus sit amet tempus.',
 ];
 
-const Countries = [
+const COUNTRIES = [
   'Australia',
   'Finland',
   'Russia',
@@ -43,7 +43,7 @@ const Countries = [
   'Bulgaria',
 ];
 
-const Producer = [
+const PRODUCER = [
   'Tom Ford',
   'Sam Simon',
   'David Simon',
@@ -51,34 +51,53 @@ const Producer = [
   'Peter Sullivan',
 ];
 
-const Genres = [
+const GENRES = [
   'Comedy',
   'Drama',
   'Fantasy',
   'Sport',
 ];
-let count = 0;
 
-const generateCard = () => {
+const NumbersGenerationData = {
+  YEAR_MIN: 1930,
+  YEAR_MAX: 2020,
+  MONTH_MAX: 13,
+  RATING_MAX: 10,
+  TIME_MIN: 60,
+  TIME_MAX: 120,
+  AGE_RATING_MAX: 20,
+  ACTORS_MIN: 2,
+};
+
+const isActiveButton = () => Boolean(getRandom(0, 1));
+
+const generateCard = (comments) => {
+
+  const getRandomComments = () => {
+    const rand = getRandom(0, comments.size - 1);
+    const commentsKeys = Array.from(comments.keys());
+    return comments.get(commentsKeys[rand]).id;
+  };
+
   return {
-    id: count++,
-    name: Names[getRandom(0, Names.length - 1)],
-    originalName: Names[getRandom(0, Names.length - 1)],
-    poster: `${Posters[getRandom(0, Posters.length - 1)]}`,
-    description: generateArrayData(1, Texts).join(''),
-    rating: Number(`${getRandom(0, 10)}.${getRandom(0, 10)}`),
-    ageRating: getRandom(0, 20),
-    country: Countries[getRandom(0, Countries.length - 1)],
-    date: new Date(getRandom(1930, 2020), getRandom(0, 13)),
-    length: getRandom(60, 210),
-    producer: Producer[getRandom(1, Producer.length - 1)],
-    scenarists: Array.from(new Set(generateArrayData(1, Producer))),
-    actors: Array.from(new Set(generateArrayData(2, Producer))),
-    genres: Array.from(new Set(generateArrayData(1, Genres))),
-    isWatchList: Boolean(getRandom(0, 1)),
-    isWatched: Boolean(getRandom(0, 1)),
-    isFavorites: Boolean(getRandom(0, 1)),
-    comments: Array.from(new Set(new Array(getRandom(0, COUNT_COMMENTS)).fill().map(() => getRandom(1, COUNT_COMMENTS)))),
+    id: getId(),
+    name: getRandomKeyFromArray(NAMES),
+    originalName: getRandomKeyFromArray(NAMES),
+    poster: `${getRandomKeyFromArray(POSTERS)}`,
+    description: generateArrayData(1, TEXTS).join(''),
+    rating: Number(`${getRandom(0, NumbersGenerationData.RATING_MAX)}.${getRandom(0, NumbersGenerationData.RATING_MAX)}`),
+    ageRating: getRandom(0, NumbersGenerationData.AGE_RATING_MAX),
+    country: getRandomKeyFromArray(COUNTRIES),
+    date: new Date(getRandom(NumbersGenerationData.YEAR_MIN, NumbersGenerationData.YEAR_MAX), getRandom(0, NumbersGenerationData.MONTH_MAX)),
+    runTime: getRandom(NumbersGenerationData.TIME_MIN, NumbersGenerationData.TIME_MAX),
+    producer: getRandomKeyFromArray(PRODUCER),
+    scenarists: Array.from(new Set(generateArrayData(1, PRODUCER))),
+    actors: Array.from(new Set(generateArrayData(NumbersGenerationData.ACTORS_MIN, PRODUCER))),
+    genres: Array.from(new Set(generateArrayData(1, GENRES))),
+    isWatchList: isActiveButton(),
+    isWatched: isActiveButton(),
+    isFavorites: isActiveButton(),
+    comments: Array.from(new Set(new Array(getRandom(0, comments.size)).fill(null).map(() => getRandomComments()))),
   };
 };
 

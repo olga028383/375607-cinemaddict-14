@@ -18,7 +18,7 @@ const createCardDetailTemplate = (card = {}, commentsTemplate) => {
     producer = '',
     rating = '',
     date = new Date(),
-    length = '',
+    runTime = '',
     genres = [],
     actors = [],
     scenarists = [],
@@ -76,7 +76,7 @@ const createCardDetailTemplate = (card = {}, commentsTemplate) => {
             </tr>
             <tr class="film-details__row">
               <td class="film-details__term">Runtime</td>
-              <td class="film-details__cell">${getLengthTimeFormat(length)}</td>
+              <td class="film-details__cell">${getLengthTimeFormat(runTime)}</td>
             </tr>
             <tr class="film-details__row">
               <td class="film-details__term">Country</td>
