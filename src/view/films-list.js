@@ -1,7 +1,6 @@
-import {createButtonMoreTemplate} from './button-more.js';
+import {createElement} from "../util";
 
-const createFilmsListTemplate = (card, showedButton = true) => {
-  const button = (showedButton) ? createButtonMoreTemplate(): '';
+const createFilmsListTemplate = (card, button = '') => {
   return `<section class="films-list">
       <h2 class="films-list__title visually-hidden">All movies. Upcoming</h2>
 
@@ -13,4 +12,26 @@ const createFilmsListTemplate = (card, showedButton = true) => {
     </section>`;
 };
 
-export {createFilmsListTemplate};
+export default class FilmsList {
+  constructor(card, button) {
+    this._button = button;
+    this._card = card;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createFilmsListTemplate(this._card, this._button);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

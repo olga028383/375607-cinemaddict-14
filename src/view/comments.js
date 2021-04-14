@@ -1,5 +1,7 @@
 import {getDateFormat} from '../lib.js';
 import {EMOTIONS} from '../constants.js';
+import {createElement} from "../util";
+
 
 const generateCommentTemplate = (comment = {}) => {
   const {
@@ -60,4 +62,26 @@ const createCommentsTemplate = (comments) => {
         </div>`;
 };
 
-export {createCommentsTemplate};
+export default class Comments {
+  constructor(comments) {
+    this._element = null;
+    this.comments = comments;
+  }
+
+  getTemplate() {
+    return createCommentsTemplate(this.comments);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
+

@@ -1,5 +1,5 @@
 import {getYear} from '../lib.js';
-import {getLengthTimeFormat, clipText} from '../util.js';
+import {getLengthTimeFormat, clipText, createElement} from '../util.js';
 
 const MAX_LENGTH_DESCRIPTION = 140;
 
@@ -42,4 +42,26 @@ const createCardTemplate = (card = {}) => {
        </article>`;
 };
 
-export {createCardTemplate};
+export default class Card {
+  constructor(card) {
+    this._element = null;
+    this._card = card;
+  }
+
+  getTemplate() {
+    return createCardTemplate(this._card);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
+

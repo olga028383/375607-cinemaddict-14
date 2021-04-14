@@ -1,3 +1,26 @@
+const ContentPosition = {
+  AFTERBEGIN: 'afterbegin',
+  BEFOREEND: 'beforeend'
+};
+
+const createElement = (content) => {
+  const element = document.createElement('div');
+  element.innerHTML = content;
+
+  return element;
+};
+
+const render = (container, template, place) => {
+  switch (place) {
+    case ContentPosition.AFTERBEGIN:
+      container.prepend(template);
+      break;
+    case ContentPosition.BEFOREEND:
+      container.append(template);
+      break;
+  }
+};
+
 const getRandom = (min = 0, max = 1) => {
   const lower = Math.ceil(Math.min(min, max));
   const upper = Math.floor(Math.max(max, max));
@@ -27,4 +50,5 @@ const clipText = (text, length) => (text.length >= length) ? `${text.slice(0, le
 
 const getRandomKeyFromArray = (data) => data[getRandom(0, data.length - 1)];
 
-export {getRandom, generateArrayData, getLengthTimeFormat, clipText, getRandomKeyFromArray};
+export {getRandom, generateArrayData, getLengthTimeFormat, clipText, createElement, render, ContentPosition, getRandomKeyFromArray};
+
