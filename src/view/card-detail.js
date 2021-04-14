@@ -1,5 +1,5 @@
 import {getDateFormat} from '../lib.js';
-import {getLengthTimeFormat} from '../util.js';
+import {getLengthTimeFormat, createElement} from '../util.js';
 
 const createGenresTemplate = (genres) => {
   return genres.map((genre) => `<span class="film-details__genre">${genre}</span>`).join('');
@@ -10,8 +10,7 @@ const createButtonTemplate = (slug, name, flag) => {
     <label for="${slug}" class="film-details__control-label film-details__control-label--${slug}">${name}</label>`;
 };
 
-const createCardDetailTemplate = (card = {}, commentsTemplate) => {
-
+const createCardDetailTemplate = (card = {}) => {
   const {
     name = '',
     originalName = '',
@@ -108,11 +107,33 @@ const createCardDetailTemplate = (card = {}, commentsTemplate) => {
     <div class="film-details__bottom-container">
       <section class="film-details__comments-wrap">
         <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${comments.length}</span></h3>
-          ${commentsTemplate}
       </section>
     </div>
   </form>
 </section>`;
 };
 
-export {createCardDetailTemplate};
+export default class CardDetail {
+  constructor(card) {
+    this._element = null;
+    this._card = card;
+  }
+
+  getTemplate() {
+    return createCardDetailTemplate(this._card);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
+
+
