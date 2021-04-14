@@ -1,5 +1,5 @@
-const createLayoutFilmsTemplate = (content) => {
-  return `<section class="films">${content}</section>`;
+const createLayoutFilmsTemplate = () => {
+  return '<section class="films"></section>';
 };
 
 export {createLayoutFilmsTemplate};

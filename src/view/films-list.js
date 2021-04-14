@@ -1,6 +1,7 @@
 import {createButtonMoreTemplate} from './button-more.js';
 
-const createFilmsListTemplate = (card) => {
+const createFilmsListTemplate = (card, showedButton = true) => {
+  const button = (showedButton) ? createButtonMoreTemplate(): '';
   return `<section class="films-list">
       <h2 class="films-list__title visually-hidden">All movies. Upcoming</h2>
 
@@ -8,7 +9,7 @@ const createFilmsListTemplate = (card) => {
         ${card}
       </div>
         
-        ${createButtonMoreTemplate()}
+        ${button}
     </section>`;
 };
 
