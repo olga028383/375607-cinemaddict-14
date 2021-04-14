@@ -47,56 +47,51 @@ const loadCardsHandler = () => {
   }
 };
 
-const drawCardsList = (showed, count) => {
-  const displayedComments = cards.slice(showed - count, showed);
-  return displayedComments.map((card) => {
-    return new CardView(card).getElement();
-  });
-};
 
 const renderCard = (cardListElement, card) => {
   const cardComponent = new CardView(card);
-
   //const commentsComponent = new CommentsView(cards.comments.map((comment) => comments.get(comment)));
-  console.log(card);
 
-  const openModalButton = cardComponent.getElement().querySelector('.film-card');
+  const poster = cardComponent.getElement().querySelector('.film-card__poster');
+  const title = cardComponent.getElement().querySelector('.film-card__title');
+  const comment = cardComponent.getElement().querySelector('.film-card__comments');
+  let cardDetailComponent = new CardDetailView(card);
 
-  openModalButton.addEventListener('click', (evt) => {
+  const openModal = (evt) => {
     evt.preventDefault();
 
-    if (evt.target.classList.contains('film-card__poster')
-      || evt.target.classList.contains('film-card__title')
-      || evt.target.classList.contains('film-card__comments')) {
+    const closeModalButton = cardDetailComponent.getElement().querySelector('.film-details__close-btn');
+    const commentTitle = cardDetailComponent.getElement().querySelector('.film-details__comments-title');
 
-      const cardDetailComponent = new CardDetailView(card);
-      const closeModalButton = cardDetailComponent.getElement().querySelector('.film-details__close-btn');
-      const commentTitle = cardDetailComponent.getElement().querySelector('.film-details__comments-title');
+    //const commentsCardComponent = new CommentsView(card.comments.map((comment) => comments.get(comment)));
+    //Создать комментарии и добавить их после
+    document.body.appendChild(cardDetailComponent.getElement());
 
-      //const commentsCardComponent = new CommentsView(card.comments.map((comment) => comments.get(comment)));
-      //Создать комментарии и добавить их после
+    closeModalButton.addEventListener('click', closeModal);
+  };
 
-      closeModalButton.addEventListener('click', (evt) => {
-        evt.preventDefault();
-        cardDetailComponent.removeElement();
-        //footerElement.innerHTML = cardDetailComponent.getElement();
-      });
+  const closeModal = (evt) => {
+    evt.preventDefault();
+    document.body.removeChild(cardDetailComponent.getElement());
+  };
 
-      render(footerElement, cardDetailComponent.getElement(), 'beforeend');
-    }
-  });
-
-
-
+  poster.addEventListener('click', openModal);
+  title.addEventListener('click', openModal);
+  comment.addEventListener('click', openModal);
   render(cardListElement, cardComponent.getElement(), 'beforeend');
 };
 
-renderCard(mainElement,cards[0]);
+const drawCardsList = (showed, count) => {
+  let filmLayoutComponent = new LayoutFilmsView();
+  const displayedComments = cards.slice(showed - count, showed);
 
-// const filmLayout = new LayoutFilmsView();
-//
-// const buttonMore = (showedCards < COUNT_CARD_All) ? new ButtonMoreView() : '';
-// const filmList = new FilmsListView(drawCardsList(COUNT_CARD_LIST, COUNT_CARD_LIST), buttonMore.getElement());
+  displayedComments.forEach((card) => {
+    renderCard(filmLayoutComponent.getElement(), card)
+  });
+
+  return filmLayoutComponent;
+};
+
 //
 // const topRatedCard = cards.slice().sort((a, b) => {
 //   return b.rating - a.rating;
@@ -121,10 +116,13 @@ renderCard(mainElement,cards[0]);
 // //buttonMore.addEventListener('click', loadCardsHandler);
 //
 
-
 render(headerElement, new RankUserView().getElement(), 'beforeend');
 render(mainElement, new MenuView(filters).getElement(), 'afterbegin');
 render(mainElement, new SortView().getElement(), 'beforeend');
+
+const buttonMoreComponent = (showedCards < COUNT_CARD_All) ? new ButtonMoreView() : '';
+const filmListComponent = new FilmsListView(drawCardsList(COUNT_CARD_LIST, COUNT_CARD_LIST), buttonMoreComponent.getElement());
+render(mainElement, filmListComponent.getElement(), 'beforeend');
 
 
 footerStatisticElement.textContent = `${cards.length.toLocaleString()} movies inside`;

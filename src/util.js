@@ -3,11 +3,10 @@ const ContentPosition = {
   BEFOREEND: 'beforeend'
 };
 
-const createElement = (content) => {
+const createElement = (template) => {
   const element = document.createElement('div');
-  element.innerHTML = content;
-
-  return element;
+  element.innerHTML = template;
+  return element.firstElementChild;
 };
 
 const render = (container, template, place) => {
@@ -50,5 +49,14 @@ const clipText = (text, length) => (text.length >= length) ? `${text.slice(0, le
 
 const getRandomKeyFromArray = (data) => data[getRandom(0, data.length - 1)];
 
-export {getRandom, generateArrayData, getLengthTimeFormat, clipText, createElement, render, ContentPosition, getRandomKeyFromArray};
+export {
+  getRandom,
+  generateArrayData,
+  getLengthTimeFormat,
+  clipText,
+  createElement,
+  render,
+  ContentPosition,
+  getRandomKeyFromArray
+};
 
