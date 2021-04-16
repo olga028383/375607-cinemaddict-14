@@ -1,4 +1,4 @@
-import {createElement} from "../util";
+import {createElement} from '../util.js';
 
 const createLayoutFilmsTemplate = (content = '') => {
   return `<section class="films">${content}</section>`;
@@ -19,7 +19,7 @@ export default class LayoutFilms {
       this._element = createElement(this.getTemplate());
     }
 
-    return this._element
+    return this._element;
   }
 
   removeElement(){

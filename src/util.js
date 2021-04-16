@@ -1,6 +1,6 @@
 const ContentPosition = {
   AFTERBEGIN: 'afterbegin',
-  BEFOREEND: 'beforeend'
+  BEFOREEND: 'beforeend',
 };
 
 const createElement = (template) => {
@@ -49,6 +49,10 @@ const clipText = (text, length) => (text.length >= length) ? `${text.slice(0, le
 
 const getRandomKeyFromArray = (data) => data[getRandom(0, data.length - 1)];
 
+function isEscEvent(evt) {
+  return evt.key === 'Escape' || evt.key === 'Esc';
+}
+
 export {
   getRandom,
   generateArrayData,
@@ -57,6 +61,7 @@ export {
   createElement,
   render,
   ContentPosition,
-  getRandomKeyFromArray
+  getRandomKeyFromArray,
+  isEscEvent
 };
 

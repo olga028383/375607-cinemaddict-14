@@ -1,5 +1,5 @@
-import {getYear} from '../lib.js';
-import {getLengthTimeFormat, clipText, createElement} from '../util.js';
+import {getYear} from '../../lib.js';
+import {getLengthTimeFormat, clipText, createElement} from '../../util.js';
 
 const MAX_LENGTH_DESCRIPTION = 140;
 
@@ -7,7 +7,7 @@ const getActiveClassButton = (flag) => {
   return flag ? 'film-card__controls-item--active' : '';
 };
 
-const createCardTemplate = (card = {}) => {
+const createCardTemplate = (film = {}) => {
   const {
     id = 0,
     name = '',
@@ -21,7 +21,7 @@ const createCardTemplate = (card = {}) => {
     isFavorites = false,
     isWatched = false,
     isWatchList = false,
-  } = card;
+  } = film;
 
   return `<article class="film-card" data-id="${id}">
           <h3 class="film-card__title">${name}</h3>
@@ -42,10 +42,10 @@ const createCardTemplate = (card = {}) => {
        </article>`;
 };
 
-export default class Card {
-  constructor(card) {
+export default class Film {
+  constructor(film) {
     this._element = null;
-    this._card = card;
+    this._card = film;
   }
 
   getTemplate() {
@@ -57,7 +57,7 @@ export default class Card {
       this._element = createElement(this.getTemplate());
     }
 
-    return this._element
+    return this._element;
   }
 
   removeElement() {

@@ -69,14 +69,13 @@ const NumbersGenerationData = {
   ACTORS_MIN: 2,
 };
 
-const isActiveButton = () => Boolean(getRandom(0, 1));
+const getRandomBoolean = () => Boolean(getRandom(0, 1));
 
-const generateCard = (comments) => {
+const generateFilm = (comments) => {
 
   const getRandomComments = () => {
-    const rand = getRandom(0, comments.size - 1);
-    const commentsKeys = Array.from(comments.keys());
-    return comments.get(commentsKeys[rand]).id;
+    const rand = getRandom(0, comments.length - 1);
+    return comments.slice(0, rand).map((comment) => comment.id);
   };
 
   return {
@@ -94,11 +93,11 @@ const generateCard = (comments) => {
     scenarists: Array.from(new Set(generateArrayData(1, PRODUCER))),
     actors: Array.from(new Set(generateArrayData(NumbersGenerationData.ACTORS_MIN, PRODUCER))),
     genres: Array.from(new Set(generateArrayData(1, GENRES))),
-    isWatchList: isActiveButton(),
-    isWatched: isActiveButton(),
-    isFavorites: isActiveButton(),
-    comments: Array.from(new Set(new Array(getRandom(0, comments.size)).fill(null).map(() => getRandomComments()))),
+    isWatchList: getRandomBoolean(),
+    isWatched: getRandomBoolean(),
+    isFavorites: getRandomBoolean(),
+    comments: Array.from(new Set(new Array(getRandom(0, comments.length)).fill(null).map(() => getRandomComments()))),
   };
 };
 
-export {generateCard};
+export {generateFilm};

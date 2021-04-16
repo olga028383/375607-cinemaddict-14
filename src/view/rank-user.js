@@ -1,4 +1,4 @@
-import {createElement} from "../util";
+import {createElement} from '../util.js';
 
 const createRankUserTemplate = () => {
   return `<section class="header__profile profile">
@@ -20,7 +20,7 @@ export default class RankUser {
     if (!this._element) {
       this._element = createElement(this.getTemplate());
     }
-    return this._element
+    return this._element;
   }
 
   removeElement() {

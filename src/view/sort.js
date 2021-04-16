@@ -1,4 +1,4 @@
-import {createElement} from "../util";
+import {createElement} from '../util.js';
 
 const createSortTemplate = () => {
   return `<ul class="sort">
@@ -22,7 +22,7 @@ export default class Sort {
       this._element = createElement(this.getTemplate());
     }
 
-    return this._element
+    return this._element;
   }
 
   removeElement(){

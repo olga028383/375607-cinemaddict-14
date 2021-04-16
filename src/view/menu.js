@@ -1,4 +1,4 @@
-import {createElement} from "../util";
+import {createElement} from '../util.js';
 
 const createFilterTemplate = (filters) => {
   return `<a href="#${filters.href}" class="main-navigation__item">${filters.name}<span class="main-navigation__item-count">${filters.count}</span></a>`;
@@ -19,24 +19,24 @@ const createMenuTemplate = (filters = {}) => {
 };
 
 export default class Menu {
-  constructor(filters){
+  constructor(filters) {
     this._element = null;
     this._filters = filters;
   }
 
-  getTemplate(){
+  getTemplate() {
     return createMenuTemplate(this._filters);
   }
 
-  getElement(){
-    if(!this._element){
+  getElement() {
+    if (!this._element) {
       this._element = createElement(this.getTemplate());
     }
 
-    return this._element
+    return this._element;
   }
 
-  removeElement(){
+  removeElement() {
     this._element = null;
   }
 }

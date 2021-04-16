@@ -1,4 +1,4 @@
-import {createElement} from "../util";
+import {createElement} from '../util';
 
 const createButtonMoreTemplate = () => {
   return '<button class="films-list__show-more">Show more</button>';
@@ -18,7 +18,7 @@ export default class ButtonMore {
       this._element = createElement(this.getTemplate());
     }
 
-    return this._element
+    return this._element;
   }
 
   removeElement(){

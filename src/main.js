@@ -2,127 +2,197 @@ import RankUserView from './view/rank-user.js';
 import MenuView from './view/menu.js';
 import SortView from './view/sort.js';
 import LayoutFilmsView from './view/layout-fillms.js';
-import FilmsListView from './view/films-list.js';
+import StatisticsView from './view/statistics.js';
+
+import FilmsListContainerView from './view/films/films-list-container.js';
+import FilmsListView from './view/films/films-list.js';
+import FilmsListExtraView from './view/films/films-list-extra.js';
+import FilmView from './view/films/film.js';
+
 import ButtonMoreView from './view/button-more.js';
-import FilmsListExtraView from './view/films-list-extra.js';
-import CardView from './view/card.js';
-import CardDetailView from './view/card-detail.js';
-import CommentsView from './view/comments.js';
+
+import FilmDetailsContainerView from './view/film-details/film-details-container.js';
+import FilmDetailsBottomView from './view/film-details/film-details-bottom.js';
+import FilmDetailsView from './view/film-details/film-details.js';
+
+import CommentsContainerView from './view/comments/comments-container.js';
+import CommentsFormView from './view/comments/comments-form.js';
+import CommentsListView from './view/comments/comments-list.js';
+import CommentView from './view/comments/comment.js';
+import EmojiListView from './view/comments/emoji-list.js';
 
 import {generateFilter} from './mock/filter.js';
-import {generateCard} from './mock/card.js';
+import {generateFilm} from './mock/film.js';
 import {generateComment} from './mock/comment.js';
 
-import {render, ContentPosition} from './util.js';
+import {render, ContentPosition, isEscEvent} from './util.js';
 
-const COUNT_COMMENTS = 30;
 const COUNT_CARD_All = 30;
-const COUNT_CARD_LIST = 5;
 const COUNT_CARD_TOP = 2;
-let showedCards = COUNT_CARD_LIST;
 
+const bodyElement = document.body;
 const headerElement = document.querySelector('.header');
 const mainElement = document.querySelector('.main');
 const footerElement = document.querySelector('.footer');
-const footerStatisticElement = footerElement.querySelector('.footer__statistics');
 
-const comments = new Map();
-for (let i = 1; i <= COUNT_COMMENTS; i++) {
-  const comment = generateComment();
-  comments.set(comment.id, comment);
-}
-const cards = new Array(COUNT_CARD_All).fill(null).map(() => generateCard(comments));
-const filters = generateFilter(cards);
+const comments = new Array(COUNT_CARD_All).fill(null).map(() => generateComment());
+const films = new Array(COUNT_CARD_All).fill(null).map(() => generateFilm(comments));
+const filters = generateFilter(films);
 
-const loadCardsHandler = () => {
-  const lastCountCards = showedCards;
-  const loadedCards = cards.slice(lastCountCards, lastCountCards + COUNT_CARD_LIST);
-  showedCards = showedCards + loadedCards.length;
+const renderCommentsForm = (comments) => {
+  const commentsContainerElement = new CommentsContainerView(comments.length).getElement();
+  const commentsFormElement = new CommentsFormView().getElement();
+  const commentsListElement = new CommentsListView().getElement();
 
-  const list = drawCardsList(showedCards, COUNT_CARD_LIST, createCardTemplate);
-  render(filmList, list, 'beforeend');
+  comments.forEach((comment) => {
+    render(commentsListElement, new CommentView(comment).getElement(), ContentPosition.BEFOREEND);
+  });
 
-  if (cards.length - showedCards === 0) {
-    buttonMore.style.display = 'none';
-  }
+  render(commentsContainerElement, commentsListElement, ContentPosition.BEFOREEND);
+  render(commentsFormElement, new EmojiListView().getElement(), ContentPosition.BEFOREEND);
+  render(commentsContainerElement, commentsFormElement, ContentPosition.BEFOREEND);
+  return commentsContainerElement;
 };
 
+const renderFilmDetail = (film) => {
+  const filmDetailContainerElement = new FilmDetailsContainerView().getElement();
+  const filmDetailBottomElement = new FilmDetailsBottomView().getElement();
+  const filmDetailElement = new FilmDetailsView(film).getElement();
 
-const renderCard = (cardListElement, card) => {
-  const cardComponent = new CardView(card);
-  //const commentsComponent = new CommentsView(cards.comments.map((comment) => comments.get(comment)));
+  render(filmDetailBottomElement, filmDetailElement, ContentPosition.BEFOREEND);
+  render(filmDetailBottomElement, renderCommentsForm(comments.slice(0, 5)), ContentPosition.BEFOREEND);
+  render(filmDetailContainerElement, filmDetailBottomElement, ContentPosition.BEFOREEND);
 
+  return filmDetailContainerElement;
+};
+
+const openModal = (filmDetailElement) => {
+  bodyElement.classList.add('hide-overflow');
+  render(bodyElement, filmDetailElement, 'beforeend');
+};
+
+const closeModal = (filmDetailElement) => {
+  bodyElement.classList.remove('hide-overflow');
+  document.body.removeChild(filmDetailElement);
+};
+
+const renderFilm = (film) => {
+  const cardComponent = new FilmView(film);
   const poster = cardComponent.getElement().querySelector('.film-card__poster');
   const title = cardComponent.getElement().querySelector('.film-card__title');
   const comment = cardComponent.getElement().querySelector('.film-card__comments');
-  let cardDetailComponent = new CardDetailView(card);
+  const filmDetailElement = renderFilmDetail(film);
+  const filmDetailTextareaElement = filmDetailElement.querySelector('.film-details__comment-input');
 
-  const openModal = (evt) => {
-    evt.preventDefault();
 
-    const closeModalButton = cardDetailComponent.getElement().querySelector('.film-details__close-btn');
-    const commentTitle = cardDetailComponent.getElement().querySelector('.film-details__comments-title');
+  const closeModalEscKeydownHandler = (evt) => {
+    if (isEscEvent(evt)) {
+      evt.preventDefault();
 
-    //const commentsCardComponent = new CommentsView(card.comments.map((comment) => comments.get(comment)));
-    //Создать комментарии и добавить их после
-    document.body.appendChild(cardDetailComponent.getElement());
-
-    closeModalButton.addEventListener('click', closeModal);
+      closeModal(filmDetailElement);
+    }
   };
 
-  const closeModal = (evt) => {
+
+  const openModalHandler = (evt) => {
     evt.preventDefault();
-    document.body.removeChild(cardDetailComponent.getElement());
+    const closeModalButton = filmDetailElement.querySelector('.film-details__close-btn');
+
+    openModal(filmDetailElement);
+
+    closeModalButton.addEventListener('click', closeModalHandler);
+    document.addEventListener('keydown', closeModalEscKeydownHandler);
   };
 
-  poster.addEventListener('click', openModal);
-  title.addEventListener('click', openModal);
-  comment.addEventListener('click', openModal);
-  render(cardListElement, cardComponent.getElement(), 'beforeend');
-};
+  const closeModalHandler = (evt) => {
+    evt.preventDefault();
 
-const drawCardsList = (showed, count) => {
-  let filmLayoutComponent = new LayoutFilmsView();
-  const displayedComments = cards.slice(showed - count, showed);
+    closeModal(filmDetailElement);
 
-  displayedComments.forEach((card) => {
-    renderCard(filmLayoutComponent.getElement(), card)
+    document.removeEventListener('keydown', closeModalEscKeydownHandler);
+  };
+
+
+  poster.addEventListener('click', openModalHandler);
+  title.addEventListener('click', openModalHandler);
+  comment.addEventListener('click', openModalHandler);
+
+  filmDetailTextareaElement.addEventListener('focus', () => {
+    document.removeEventListener('keydown', closeModalEscKeydownHandler);
   });
 
-  return filmLayoutComponent;
+  filmDetailTextareaElement.addEventListener('blur', () => {
+    document.addEventListener('keydown', closeModalEscKeydownHandler);
+  });
+
+  return cardComponent.getElement();
 };
 
-//
-// const topRatedCard = cards.slice().sort((a, b) => {
-//   return b.rating - a.rating;
-// }).slice(0, COUNT_CARD_TOP);
-//
-// const topRatedCardTemplate = new FilmsListExtraView('Top rated', topRatedCard.map((card) => {
-//   return new CardView(card).getElement();
-// }).join('')).getElement();
-//
-// const mostCommentedCard = cards.slice().sort((a, b) => {
-//   return b.comments.length - a.comments.length;
-// }).slice(0, COUNT_CARD_TOP);
-//
-// const mostCommentedCardTemplate = new FilmsListExtraView('Most commented', mostCommentedCard.map((card) => {
-//   return new CardView(card).getElement();
-// }).join('')).getElement();
-//
-// render(main, filmLayout.getElement(), 'beforeend');
-// render(filmLayout.getElement(), filmList.getElement(), 'afterbegin');
-//
-// //const filmList = document.querySelector('.films-list__container');
-// //buttonMore.addEventListener('click', loadCardsHandler);
-//
+const renderFilmsList = () => {
+  const COUNT_CARD_LIST = 5;
+  let showedCards = COUNT_CARD_LIST;
 
-render(headerElement, new RankUserView().getElement(), 'beforeend');
-render(mainElement, new MenuView(filters).getElement(), 'afterbegin');
-render(mainElement, new SortView().getElement(), 'beforeend');
+  const displayedComments = films.slice(showedCards - COUNT_CARD_LIST, showedCards);
+  const filmListElement = new FilmsListView().getElement();
+  const filmsListContainerElement = new FilmsListContainerView().getElement();
+  const buttonMoreComponent = (showedCards < COUNT_CARD_All) ? new ButtonMoreView() : '';
 
-const buttonMoreComponent = (showedCards < COUNT_CARD_All) ? new ButtonMoreView() : '';
-const filmListComponent = new FilmsListView(drawCardsList(COUNT_CARD_LIST, COUNT_CARD_LIST), buttonMoreComponent.getElement());
-render(mainElement, filmListComponent.getElement(), 'beforeend');
+  displayedComments.forEach((film) => {
+    render(filmsListContainerElement, renderFilm(film), 'beforeend');
+  });
 
+  render(filmListElement, filmsListContainerElement, 'beforeend');
+  render(filmListElement, buttonMoreComponent.getElement(), 'beforeend');
 
-footerStatisticElement.textContent = `${cards.length.toLocaleString()} movies inside`;
+  buttonMoreComponent.getElement().addEventListener('click', () => {
+    const lastCountCards = showedCards;
+    const loadedCards = films.slice(lastCountCards, lastCountCards + COUNT_CARD_LIST);
+    showedCards = showedCards + loadedCards.length;
+
+    loadedCards.forEach((film) => {
+      render(filmsListContainerElement, renderFilm(film), 'beforeend');
+    });
+
+    render(filmListElement, filmsListContainerElement, 'beforeend');
+    render(filmListElement, buttonMoreComponent.getElement(), 'beforeend');
+
+    if (films.length - showedCards === 0) {
+      buttonMoreComponent.getElement().style.display = 'none';
+    }
+  });
+
+  return filmListElement;
+};
+
+const FilmsListExtra = (title, films) => {
+  const FilmsListExtraElement = new FilmsListExtraView(title).getElement();
+  const filmsListContainerElement = new FilmsListContainerView().getElement();
+
+  films.forEach((film) => {
+    render(filmsListContainerElement, renderFilm(film), 'beforeend');
+  });
+
+  render(FilmsListExtraElement, filmsListContainerElement, 'beforeend');
+
+  return FilmsListExtraElement;
+};
+
+render(headerElement, new RankUserView().getElement(), ContentPosition.BEFOREEND);
+render(mainElement, new MenuView(filters).getElement(), ContentPosition.AFTERBEGIN);
+render(mainElement, new SortView().getElement(), ContentPosition.BEFOREEND);
+
+const LayoutFilmsComponent = new LayoutFilmsView().getElement();
+render(LayoutFilmsComponent, renderFilmsList(), ContentPosition.BEFOREEND);
+
+const topRatedCard = films.slice().sort((a, b) => {
+  return b.rating - a.rating;
+}).slice(0, COUNT_CARD_TOP);
+render(LayoutFilmsComponent, FilmsListExtra('Top rated', topRatedCard), ContentPosition.BEFOREEND);
+
+const mostCommentedCard = films.slice().sort((a, b) => {
+  return b.comments.length - a.comments.length;
+}).slice(0, COUNT_CARD_TOP);
+render(LayoutFilmsComponent, FilmsListExtra('Most commented', mostCommentedCard), ContentPosition.BEFOREEND);
+
+render(mainElement, LayoutFilmsComponent, ContentPosition.BEFOREEND);
+render(footerElement, new StatisticsView(films.length.toLocaleString()).getElement(), ContentPosition.BEFOREEND);
