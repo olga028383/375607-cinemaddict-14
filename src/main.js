@@ -28,6 +28,7 @@ import {generateComment} from './mock/comment.js';
 import {render, ContentPosition, isEscEvent} from './util.js';
 
 const COUNT_CARD_All = 30;
+const COUNT_CARD_LIST = 5;
 const COUNT_CARD_TOP = 2;
 
 const bodyElement = document.body;
@@ -73,17 +74,14 @@ const openModal = (filmDetailElement) => {
 
 const closeModal = (filmDetailElement) => {
   bodyElement.classList.remove('hide-overflow');
-  document.body.removeChild(filmDetailElement);
+  filmDetailElement.remove();
 };
 
 const renderFilm = (film) => {
   const cardComponent = new FilmView(film);
-  const poster = cardComponent.getElement().querySelector('.film-card__poster');
-  const title = cardComponent.getElement().querySelector('.film-card__title');
-  const comment = cardComponent.getElement().querySelector('.film-card__comments');
+  const buttonsOpenModal = cardComponent.getElement().querySelectorAll('.film-card__poster, .film-card__title, .film-card__comments');
   const filmDetailElement = renderFilmDetail(film);
   const filmDetailTextareaElement = filmDetailElement.querySelector('.film-details__comment-input');
-
 
   const closeModalEscKeydownHandler = (evt) => {
     if (isEscEvent(evt)) {
@@ -92,7 +90,6 @@ const renderFilm = (film) => {
       closeModal(filmDetailElement);
     }
   };
-
 
   const openModalHandler = (evt) => {
     evt.preventDefault();
@@ -112,10 +109,9 @@ const renderFilm = (film) => {
     document.removeEventListener('keydown', closeModalEscKeydownHandler);
   };
 
-
-  poster.addEventListener('click', openModalHandler);
-  title.addEventListener('click', openModalHandler);
-  comment.addEventListener('click', openModalHandler);
+  buttonsOpenModal.forEach((button)=>{
+    button.addEventListener('click', openModalHandler);
+  });
 
   filmDetailTextareaElement.addEventListener('focus', () => {
     document.removeEventListener('keydown', closeModalEscKeydownHandler);
@@ -129,7 +125,6 @@ const renderFilm = (film) => {
 };
 
 const renderFilmsList = () => {
-  const COUNT_CARD_LIST = 5;
   let showedCards = COUNT_CARD_LIST;
 
   const displayedComments = films.slice(showedCards - COUNT_CARD_LIST, showedCards);
