@@ -30,14 +30,12 @@ const NumbersGenerationData = {
   MONTH_MAX: 13,
 };
 
-const generateComment = () => {
-  return {
-    id: getId(),
-    text: generateArrayData(1, TEXTS).join(''),
-    emotion: getRandomKeyFromArray(EMOTIONS),
-    author: getRandomKeyFromArray(AUTHORS),
-    date: new Date(getRandom(NumbersGenerationData.YEAR_MIN, NumbersGenerationData.YEAR_MAX), getRandom(0, NumbersGenerationData.MONTH_MAX)),
-  };
-};
+const generateComment = () => ({
+  id: getId(),
+  text: generateArrayData(1, TEXTS).join(''),
+  emotion: getRandomKeyFromArray(EMOTIONS),
+  author: getRandomKeyFromArray(AUTHORS),
+  date: new Date(getRandom(NumbersGenerationData.YEAR_MIN, NumbersGenerationData.YEAR_MAX), getRandom(0, NumbersGenerationData.MONTH_MAX)),
+});
 
 export {generateComment};

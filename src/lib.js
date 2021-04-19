@@ -1,7 +1,5 @@
-/* global require:readonly */
 import * as dayjs from 'dayjs';
-
-const nanoid = require('nanoid');
+import nanoid from 'nanoid';
 
 const getYear = (data) => dayjs(data).year();
 

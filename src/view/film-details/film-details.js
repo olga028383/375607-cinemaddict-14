@@ -1,5 +1,5 @@
-import {getDateFormat} from '../lib.js';
-import {getLengthTimeFormat} from '../util.js';
+import {getDateFormat} from '../../lib.js';
+import {getLengthTimeFormat, createElement} from '../../util.js';
 
 const createGenresTemplate = (genres) => {
   return genres.map((genre) => `<span class="film-details__genre">${genre}</span>`).join('');
@@ -10,8 +10,7 @@ const createButtonTemplate = (slug, name, flag) => {
     <label for="${slug}" class="film-details__control-label film-details__control-label--${slug}">${name}</label>`;
 };
 
-const createCardDetailTemplate = (card = {}, commentsTemplate) => {
-
+const createCardDetailTemplate = (film = {}) => {
   const {
     name = '',
     originalName = '',
@@ -25,16 +24,13 @@ const createCardDetailTemplate = (card = {}, commentsTemplate) => {
     poster = 'made-for-each-other.png',
     description = '',
     country = '',
-    comments = [],
     ageRating = 0,
     isFavorites = false,
     isWatched = false,
     isWatchList = false,
-  } = card;
+  } = film;
 
-  return `<section class="film-details">
-  <form class="film-details__inner" action="" method="get">
-    <div class="film-details__top-container">
+  return `<div class="film-details__top-container">
       <div class="film-details__close">
         <button class="film-details__close-btn" type="button">close</button>
       </div>
@@ -103,16 +99,30 @@ const createCardDetailTemplate = (card = {}, commentsTemplate) => {
         ${createButtonTemplate('favorite', 'Add to favorites', isFavorites)}
         
       </section>
-    </div>
-
-    <div class="film-details__bottom-container">
-      <section class="film-details__comments-wrap">
-        <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${comments.length}</span></h3>
-          ${commentsTemplate}
-      </section>
-    </div>
-  </form>
-</section>`;
+    </div>`;
 };
 
-export {createCardDetailTemplate};
+export default class FilmDetails {
+  constructor(film) {
+    this._element = null;
+    this._card = film;
+  }
+
+  getTemplate() {
+    return createCardDetailTemplate(this._card);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
+
+
