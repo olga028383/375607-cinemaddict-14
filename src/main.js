@@ -154,7 +154,7 @@ const renderFilmsList = () => {
       render(filmListElement, buttonMoreElement, 'beforeend');
 
       if (films.length - showedCards === 0) {
-        buttonMoreComponent.getElement().style.display = 'none';
+        buttonMoreElement.getElement().style.display = 'none';
       }
     });
   }
