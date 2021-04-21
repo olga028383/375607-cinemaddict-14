@@ -1,5 +1,6 @@
 import {getDateFormat} from '../../lib.js';
-import {getLengthTimeFormat, createElement} from '../../util.js';
+import {getLengthTimeFormat} from '../../util.js';
+import AbstractView from '../abstract-view.js';
 
 const createGenresTemplate = (genres) => {
   return genres.map((genre) => `<span class="film-details__genre">${genre}</span>`).join('');
@@ -102,26 +103,14 @@ const createCardDetailTemplate = (film = {}) => {
     </div>`;
 };
 
-export default class FilmDetails {
+export default class FilmDetails extends AbstractView{
   constructor(film) {
-    this._element = null;
+    super();
     this._card = film;
   }
 
   getTemplate() {
     return createCardDetailTemplate(this._card);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }
 

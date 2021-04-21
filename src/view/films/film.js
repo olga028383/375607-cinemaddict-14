@@ -1,5 +1,6 @@
 import {getYear} from '../../lib.js';
-import {getLengthTimeFormat, clipText, createElement} from '../../util.js';
+import {getLengthTimeFormat, clipText} from '../../util.js';
+import AbstractView from "../abstract-view.js";
 
 const MAX_LENGTH_DESCRIPTION = 140;
 
@@ -42,26 +43,14 @@ const createCardTemplate = (film = {}) => {
        </article>`;
 };
 
-export default class Film {
+export default class Film extends AbstractView{
   constructor(film) {
-    this._element = null;
+    super();
     this._card = film;
   }
 
   getTemplate() {
     return createCardTemplate(this._card);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }
 
