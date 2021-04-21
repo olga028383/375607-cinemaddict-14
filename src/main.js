@@ -8,6 +8,7 @@ import FilmsListContainerView from './view/films/films-list-container.js';
 import FilmsListView from './view/films/films-list.js';
 import FilmsListExtraView from './view/films/films-list-extra.js';
 import FilmView from './view/films/film.js';
+import FilmsEmptyView from './view/films/films-empty.js';
 
 import ButtonMoreView from './view/button-more.js';
 
@@ -130,31 +131,33 @@ const renderFilmsList = () => {
   const displayedComments = films.slice(showedCards - COUNT_CARD_LIST, showedCards);
   const filmListElement = new FilmsListView().getElement();
   const filmsListContainerElement = new FilmsListContainerView().getElement();
-  const buttonMoreComponent = (showedCards < COUNT_CARD_All) ? new ButtonMoreView() : '';
+  const buttonMoreElement = (showedCards < COUNT_CARD_All) ? new ButtonMoreView().getElement() : '';
 
   displayedComments.forEach((film) => {
     render(filmsListContainerElement, renderFilm(film), 'beforeend');
   });
 
   render(filmListElement, filmsListContainerElement, 'beforeend');
-  render(filmListElement, buttonMoreComponent.getElement(), 'beforeend');
+  render(filmListElement, buttonMoreElement, 'beforeend');
 
-  buttonMoreComponent.getElement().addEventListener('click', () => {
-    const lastCountCards = showedCards;
-    const loadedCards = films.slice(lastCountCards, lastCountCards + COUNT_CARD_LIST);
-    showedCards = showedCards + loadedCards.length;
+  if(buttonMoreElement) {
+    buttonMoreElement.addEventListener('click', () => {
+      const lastCountCards = showedCards;
+      const loadedCards = films.slice(lastCountCards, lastCountCards + COUNT_CARD_LIST);
+      showedCards = showedCards + loadedCards.length;
 
-    loadedCards.forEach((film) => {
-      render(filmsListContainerElement, renderFilm(film), 'beforeend');
+      loadedCards.forEach((film) => {
+        render(filmsListContainerElement, renderFilm(film), 'beforeend');
+      });
+
+      render(filmListElement, filmsListContainerElement, 'beforeend');
+      render(filmListElement, buttonMoreElement, 'beforeend');
+
+      if (films.length - showedCards === 0) {
+        buttonMoreElement.getElement().style.display = 'none';
+      }
     });
-
-    render(filmListElement, filmsListContainerElement, 'beforeend');
-    render(filmListElement, buttonMoreComponent.getElement(), 'beforeend');
-
-    if (films.length - showedCards === 0) {
-      buttonMoreComponent.getElement().style.display = 'none';
-    }
-  });
+  }
 
   return filmListElement;
 };
@@ -176,18 +179,25 @@ render(headerElement, new RankUserView().getElement(), ContentPosition.BEFOREEND
 render(mainElement, new MenuView(filters).getElement(), ContentPosition.AFTERBEGIN);
 render(mainElement, new SortView().getElement(), ContentPosition.BEFOREEND);
 
-const LayoutFilmsComponent = new LayoutFilmsView().getElement();
-render(LayoutFilmsComponent, renderFilmsList(), ContentPosition.BEFOREEND);
+if (COUNT_CARD_All) {
 
-const topRatedCard = films.slice().sort((a, b) => {
-  return b.rating - a.rating;
-}).slice(0, COUNT_CARD_TOP);
-render(LayoutFilmsComponent, FilmsListExtra('Top rated', topRatedCard), ContentPosition.BEFOREEND);
+  const LayoutFilmsComponent = new LayoutFilmsView().getElement();
+  render(LayoutFilmsComponent, renderFilmsList(), ContentPosition.BEFOREEND);
 
-const mostCommentedCard = films.slice().sort((a, b) => {
-  return b.comments.length - a.comments.length;
-}).slice(0, COUNT_CARD_TOP);
-render(LayoutFilmsComponent, FilmsListExtra('Most commented', mostCommentedCard), ContentPosition.BEFOREEND);
+  const topRatedCard = films.slice().sort((a, b) => {
+    return b.rating - a.rating;
+  }).slice(0, COUNT_CARD_TOP);
+  render(LayoutFilmsComponent, FilmsListExtra('Top rated', topRatedCard), ContentPosition.BEFOREEND);
 
-render(mainElement, LayoutFilmsComponent, ContentPosition.BEFOREEND);
+  const mostCommentedCard = films.slice().sort((a, b) => {
+    return b.comments.length - a.comments.length;
+  }).slice(0, COUNT_CARD_TOP);
+  render(LayoutFilmsComponent, FilmsListExtra('Most commented', mostCommentedCard), ContentPosition.BEFOREEND);
+
+  render(mainElement, LayoutFilmsComponent, ContentPosition.BEFOREEND);
+
+} else {
+  render(mainElement, new FilmsEmptyView().getElement(), ContentPosition.BEFOREEND);
+}
+
 render(footerElement, new StatisticsView(films.length.toLocaleString()).getElement(), ContentPosition.BEFOREEND);
