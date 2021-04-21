@@ -1,29 +1,17 @@
-import {createElement} from '../util.js';
+import AbstractView from './abstract-view.js';
 
 const createLayoutFilmsTemplate = (content = '') => {
   return `<section class="films">${content}</section>`;
 };
 
-export default class LayoutFilms {
+export default class LayoutFilms extends AbstractView{
   constructor(content){
+    super();
     this._content = content;
-    this._element = null;
   }
 
   getTemplate(){
     return createLayoutFilmsTemplate(this._content);
-  }
-
-  getElement(){
-    if(!this._element){
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement(){
-    this._element = null;
   }
 }
 

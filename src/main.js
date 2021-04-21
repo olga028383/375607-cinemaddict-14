@@ -26,7 +26,8 @@ import {generateFilter} from './mock/filter.js';
 import {generateFilm} from './mock/film.js';
 import {generateComment} from './mock/comment.js';
 
-import {render, ContentPosition, isEscEvent} from './util.js';
+import {render, ContentPosition} from './utils/render.js';
+import {isEscEvent} from './util.js';
 
 const COUNT_CARD_All = 30;
 const COUNT_CARD_LIST = 5;
@@ -131,17 +132,17 @@ const renderFilmsList = () => {
   const displayedComments = films.slice(showedCards - COUNT_CARD_LIST, showedCards);
   const filmListElement = new FilmsListView().getElement();
   const filmsListContainerElement = new FilmsListContainerView().getElement();
-  const buttonMoreElement = (showedCards < COUNT_CARD_All) ? new ButtonMoreView().getElement() : '';
+  const buttonMoreComponent = (showedCards < COUNT_CARD_All) ? new ButtonMoreView(): '';
 
   displayedComments.forEach((film) => {
     render(filmsListContainerElement, renderFilm(film), 'beforeend');
   });
 
   render(filmListElement, filmsListContainerElement, 'beforeend');
-  render(filmListElement, buttonMoreElement, 'beforeend');
+  render(filmListElement, buttonMoreComponent.getElement(), 'beforeend');
 
-  if(buttonMoreElement) {
-    buttonMoreElement.addEventListener('click', () => {
+  if(buttonMoreComponent) {
+    buttonMoreComponent.setClickHandler(() => {
       const lastCountCards = showedCards;
       const loadedCards = films.slice(lastCountCards, lastCountCards + COUNT_CARD_LIST);
       showedCards = showedCards + loadedCards.length;
@@ -151,10 +152,10 @@ const renderFilmsList = () => {
       });
 
       render(filmListElement, filmsListContainerElement, 'beforeend');
-      render(filmListElement, buttonMoreElement, 'beforeend');
+      render(filmListElement, buttonMoreComponent.getElement(), 'beforeend');
 
       if (films.length - showedCards === 0) {
-        buttonMoreElement.getElement().style.display = 'none';
+        buttonMoreComponent.getElement().style.display = 'none';
       }
     });
   }

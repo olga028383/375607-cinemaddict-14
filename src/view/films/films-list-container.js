@@ -1,27 +1,11 @@
-import {createElement} from '../../util';
+import AbstractView from "../abstract-view.js";
 
 const createFilmsListContainerTemplate = () => {
   return '<div class="films-list__container"></div>';
 };
 
-export default class FilmsListContainer {
-  constructor() {
-    this._element = null;
-  }
-
+export default class FilmsListContainer extends AbstractView{
   getTemplate() {
     return createFilmsListContainerTemplate();
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }
