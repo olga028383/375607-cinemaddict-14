@@ -13,7 +13,5 @@ const render = (container, template, place) => {
       break;
   }
 };
-export {
-  render,
-  ContentPosition
-}
+
+export {render, ContentPosition};

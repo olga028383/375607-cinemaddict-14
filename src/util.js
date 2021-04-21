@@ -1,12 +1,8 @@
-
-
 const createElement = (template) => {
   const element = document.createElement('div');
   element.innerHTML = template;
   return element.firstElementChild;
 };
-
-
 
 const getRandom = (min = 0, max = 1) => {
   const lower = Math.ceil(Math.min(min, max));

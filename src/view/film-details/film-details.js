@@ -31,10 +31,7 @@ const createCardDetailTemplate = (film = {}) => {
     isWatchList = false,
   } = film;
 
-  return `<div class="film-details__top-container">
-      <div class="film-details__close">
-        <button class="film-details__close-btn" type="button">close</button>
-      </div>
+  return `
       <div class="film-details__info-wrap">
         <div class="film-details__poster">
           <img class="film-details__poster-img" src="./images/posters/${poster}" alt="">
@@ -99,11 +96,10 @@ const createCardDetailTemplate = (film = {}) => {
         ${createButtonTemplate('watched', 'Already watched', isWatched)}
         ${createButtonTemplate('favorite', 'Add to favorites', isFavorites)}
         
-      </section>
-    </div>`;
+      </section>`;
 };
 
-export default class FilmDetails extends AbstractView{
+export default class FilmDetails extends AbstractView {
   constructor(film) {
     super();
     this._card = film;

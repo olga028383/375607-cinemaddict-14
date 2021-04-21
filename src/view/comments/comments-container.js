@@ -6,10 +6,10 @@ const createCommentsContainerTemplate = (count) => {
       </section>`;
 };
 
-export default class CommentsContainer extends AbstractView{
+export default class CommentsContainer extends AbstractView {
   constructor(countComments) {
     super();
-    this._element = null;
+    this.count = countComments;
   }
 
   getTemplate() {

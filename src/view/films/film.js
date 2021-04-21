@@ -1,6 +1,6 @@
 import {getYear} from '../../lib.js';
 import {getLengthTimeFormat, clipText} from '../../util.js';
-import AbstractView from "../abstract-view.js";
+import AbstractView from '../abstract-view.js';
 
 const MAX_LENGTH_DESCRIPTION = 140;
 
@@ -43,14 +43,29 @@ const createCardTemplate = (film = {}) => {
        </article>`;
 };
 
-export default class Film extends AbstractView{
+export default class Film extends AbstractView {
   constructor(film) {
     super();
     this._card = film;
+    this._clickHandler = this._clickHandler.bind(this);
   }
 
   getTemplate() {
     return createCardTemplate(this._card);
+  }
+
+  _clickHandler(evt) {
+    evt.preventDefault();
+    this.callback.click();
+  }
+
+  setClickHandler(callback) {
+    this.callback.click = callback;
+
+    const buttons = this._element.querySelectorAll('.film-card__poster, .film-card__title, .film-card__comments');
+    buttons.forEach((button) => {
+      button.addEventListener('click', this._clickHandler);
+    });
   }
 }
 

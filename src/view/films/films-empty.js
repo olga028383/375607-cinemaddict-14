@@ -1,4 +1,4 @@
-import AbstractView from "../abstract-view.js";
+import AbstractView from '../abstract-view.js';
 
 const createFilmsEmptyTemplate = () => {
   return `<section class="films">
@@ -8,7 +8,7 @@ const createFilmsEmptyTemplate = () => {
           </section>`;
 };
 
-export default class FilmsEmpty extends AbstractView{
+export default class FilmsEmpty extends AbstractView {
   getTemplate() {
     return createFilmsEmptyTemplate();
   }
