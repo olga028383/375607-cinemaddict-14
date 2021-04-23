@@ -1,4 +1,4 @@
-import {createElement} from '../../util';
+import AbstractView from '../abstract-view.js';
 
 const createCommentsContainerTemplate = (count) => {
   return ` <section class="film-details__comments-wrap">
@@ -6,25 +6,13 @@ const createCommentsContainerTemplate = (count) => {
       </section>`;
 };
 
-export default class CommentsContainer {
+export default class CommentsContainer extends AbstractView {
   constructor(countComments) {
+    super();
     this.count = countComments;
-    this._element = null;
   }
 
   getTemplate() {
     return createCommentsContainerTemplate(this.count);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }

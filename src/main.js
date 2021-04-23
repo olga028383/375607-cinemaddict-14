@@ -26,7 +26,8 @@ import {generateFilter} from './mock/filter.js';
 import {generateFilm} from './mock/film.js';
 import {generateComment} from './mock/comment.js';
 
-import {render, ContentPosition, isEscEvent} from './util.js';
+import {render, ContentPosition} from './utils/render.js';
+import {isEscEvent} from './util.js';
 
 const COUNT_CARD_All = 30;
 const COUNT_CARD_LIST = 5;
@@ -40,10 +41,13 @@ const footerElement = document.querySelector('.footer');
 const comments = new Array(COUNT_CARD_All).fill(null).map(() => generateComment());
 const films = new Array(COUNT_CARD_All).fill(null).map(() => generateFilm(comments));
 const filters = generateFilter(films);
+const commentFormComponents = new Map();
 
-const renderCommentsForm = (comments) => {
+const renderCommentsForm = (comments, index) => {
   const commentsContainerElement = new CommentsContainerView(comments.length).getElement();
-  const commentsFormElement = new CommentsFormView().getElement();
+  const commentsFormComponent = new CommentsFormView();
+  commentFormComponents.set(index, commentsFormComponent);
+  const commentsFormElement = commentsFormComponent.getElement();
   const commentsListElement = new CommentsListView().getElement();
 
   comments.forEach((comment) => {
@@ -53,19 +57,20 @@ const renderCommentsForm = (comments) => {
   render(commentsContainerElement, commentsListElement, ContentPosition.BEFOREEND);
   render(commentsFormElement, new EmojiListView().getElement(), ContentPosition.BEFOREEND);
   render(commentsContainerElement, commentsFormElement, ContentPosition.BEFOREEND);
+
   return commentsContainerElement;
 };
 
-const renderFilmDetail = (film) => {
-  const filmDetailContainerElement = new FilmDetailsContainerView().getElement();
+const renderFilmDetail = (film, index) => {
+  const filmDetailContainer = new FilmDetailsContainerView();
   const filmDetailBottomElement = new FilmDetailsBottomView().getElement();
   const filmDetailElement = new FilmDetailsView(film).getElement();
 
   render(filmDetailBottomElement, filmDetailElement, ContentPosition.BEFOREEND);
-  render(filmDetailBottomElement, renderCommentsForm(comments.slice(0, 5)), ContentPosition.BEFOREEND);
-  render(filmDetailContainerElement, filmDetailBottomElement, ContentPosition.BEFOREEND);
+  render(filmDetailBottomElement, renderCommentsForm(comments.slice(0, 5), index), ContentPosition.BEFOREEND);
+  render(filmDetailContainer.getElement(), filmDetailBottomElement, ContentPosition.BEFOREEND);
 
-  return filmDetailContainerElement;
+  return filmDetailContainer;
 };
 
 const openModal = (filmDetailElement) => {
@@ -78,47 +83,42 @@ const closeModal = (filmDetailElement) => {
   filmDetailElement.remove();
 };
 
-const renderFilm = (film) => {
+const renderFilm = (film, index) => {
   const cardComponent = new FilmView(film);
-  const buttonsOpenModal = cardComponent.getElement().querySelectorAll('.film-card__poster, .film-card__title, .film-card__comments');
-  const filmDetailElement = renderFilmDetail(film);
-  const filmDetailTextareaElement = filmDetailElement.querySelector('.film-details__comment-input');
+  cardComponent.getElement();
+
+  const filmDetailContainer = renderFilmDetail(film, index);
 
   const closeModalEscKeydownHandler = (evt) => {
     if (isEscEvent(evt)) {
       evt.preventDefault();
 
-      closeModal(filmDetailElement);
+      closeModal(filmDetailContainer.getElement());
     }
   };
 
-  const openModalHandler = (evt) => {
-    evt.preventDefault();
-    const closeModalButton = filmDetailElement.querySelector('.film-details__close-btn');
+  const openModalHandler = () => {
 
-    openModal(filmDetailElement);
+    openModal(filmDetailContainer.getElement());
+    filmDetailContainer.setClickHandler(closeModalHandler);
 
-    closeModalButton.addEventListener('click', closeModalHandler);
     document.addEventListener('keydown', closeModalEscKeydownHandler);
   };
 
-  const closeModalHandler = (evt) => {
-    evt.preventDefault();
+  const closeModalHandler = () => {
 
-    closeModal(filmDetailElement);
+    closeModal(filmDetailContainer.getElement());
 
     document.removeEventListener('keydown', closeModalEscKeydownHandler);
   };
 
-  buttonsOpenModal.forEach((button)=>{
-    button.addEventListener('click', openModalHandler);
-  });
+  cardComponent.setClickHandler(openModalHandler);
 
-  filmDetailTextareaElement.addEventListener('focus', () => {
+  commentFormComponents.get(index).setFocusHandler(() => {
     document.removeEventListener('keydown', closeModalEscKeydownHandler);
   });
 
-  filmDetailTextareaElement.addEventListener('blur', () => {
+  commentFormComponents.get(index).setBlurHandler(() => {
     document.addEventListener('keydown', closeModalEscKeydownHandler);
   });
 
@@ -131,30 +131,30 @@ const renderFilmsList = () => {
   const displayedComments = films.slice(showedCards - COUNT_CARD_LIST, showedCards);
   const filmListElement = new FilmsListView().getElement();
   const filmsListContainerElement = new FilmsListContainerView().getElement();
-  const buttonMoreElement = (showedCards < COUNT_CARD_All) ? new ButtonMoreView().getElement() : '';
+  const buttonMoreComponent = (showedCards < COUNT_CARD_All) ? new ButtonMoreView() : '';
 
-  displayedComments.forEach((film) => {
-    render(filmsListContainerElement, renderFilm(film), 'beforeend');
+  displayedComments.forEach((film, index) => {
+    render(filmsListContainerElement, renderFilm(film, index), ContentPosition.BEFOREEND);
   });
 
-  render(filmListElement, filmsListContainerElement, 'beforeend');
-  render(filmListElement, buttonMoreElement, 'beforeend');
+  render(filmListElement, filmsListContainerElement, ContentPosition.BEFOREEND);
 
-  if(buttonMoreElement) {
-    buttonMoreElement.addEventListener('click', () => {
+  if (buttonMoreComponent) {
+    render(filmListElement, buttonMoreComponent.getElement(), ContentPosition.BEFOREEND);
+    buttonMoreComponent.setClickHandler(() => {
       const lastCountCards = showedCards;
       const loadedCards = films.slice(lastCountCards, lastCountCards + COUNT_CARD_LIST);
       showedCards = showedCards + loadedCards.length;
 
       loadedCards.forEach((film) => {
-        render(filmsListContainerElement, renderFilm(film), 'beforeend');
+        render(filmsListContainerElement, renderFilm(film), ContentPosition.BEFOREEND);
       });
 
-      render(filmListElement, filmsListContainerElement, 'beforeend');
-      render(filmListElement, buttonMoreElement, 'beforeend');
+      render(filmListElement, filmsListContainerElement, ContentPosition.BEFOREEND);
+      render(filmListElement, buttonMoreComponent.getElement(), ContentPosition.BEFOREEND);
 
       if (films.length - showedCards === 0) {
-        buttonMoreElement.getElement().style.display = 'none';
+        buttonMoreComponent.getElement().style.display = 'none';
       }
     });
   }

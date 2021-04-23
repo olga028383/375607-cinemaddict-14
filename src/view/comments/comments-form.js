@@ -1,4 +1,4 @@
-import {createElement} from '../../util';
+import AbstractView from '../abstract-view.js';
 
 const createCommentsFormTemplate = () => {
   return ` <div class="film-details__new-comment">
@@ -10,24 +10,42 @@ const createCommentsFormTemplate = () => {
           </div>`;
 };
 
-export default class CommentsForm {
+export default class CommentsForm extends AbstractView {
   constructor() {
-    this._element = null;
+    super();
+    this._field = null;
+    this._focusHandler = this._focusHandler.bind(this);
+    this._blurHandler = this._blurHandler.bind(this);
   }
 
   getTemplate() {
     return createCommentsFormTemplate();
   }
 
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
+  _focusHandler(evt) {
+    evt.preventDefault();
+    this.callback.focus();
   }
 
-  removeElement() {
-    this._element = null;
+  _blurHandler(evt) {
+    evt.preventDefault();
+    this.callback.blur();
+  }
+
+  _getField() {
+    if (!this.field) {
+      this.field = this._element.querySelector('.film-details__comment-input');
+    }
+    return this.field;
+  }
+
+  setFocusHandler(callback) {
+    this.callback.focus = callback;
+    this._getField().addEventListener('focus', this._focusHandler);
+  }
+
+  setBlurHandler(callback) {
+    this.callback.blur = callback;
+    this._getField().addEventListener('blur', this._blurHandler);
   }
 }

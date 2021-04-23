@@ -1,4 +1,4 @@
-import {createElement} from '../../util.js';
+import AbstractView from '../abstract-view.js';
 import {EMOTIONS} from '../../constants.js';
 
 const createEmojiFieldTemplate = (emotion) => {
@@ -11,24 +11,8 @@ const createEmojiListTemplate = () => {
   return ` <div class="film-details__emoji-list">${createEmojiFieldsTemplate()}</div>`;
 };
 
-export default class EmojiList {
-  constructor() {
-    this._element = null;
-  }
-
+export default class EmojiList extends AbstractView{
   getTemplate() {
     return createEmojiListTemplate();
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }

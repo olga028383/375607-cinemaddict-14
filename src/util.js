@@ -1,23 +1,7 @@
-const ContentPosition = {
-  AFTERBEGIN: 'afterbegin',
-  BEFOREEND: 'beforeend',
-};
-
 const createElement = (template) => {
   const element = document.createElement('div');
   element.innerHTML = template;
   return element.firstElementChild;
-};
-
-const render = (container, template, place) => {
-  switch (place) {
-    case ContentPosition.AFTERBEGIN:
-      container.prepend(template);
-      break;
-    case ContentPosition.BEFOREEND:
-      container.append(template);
-      break;
-  }
 };
 
 const getRandom = (min = 0, max = 1) => {
@@ -59,8 +43,6 @@ export {
   getLengthTimeFormat,
   clipText,
   createElement,
-  render,
-  ContentPosition,
   getRandomKeyFromArray,
   isEscEvent
 };
