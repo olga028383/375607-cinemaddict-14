@@ -94,8 +94,8 @@ const generateFilm = (comments) => {
     actors: Array.from(new Set(generateArrayData(NumbersGenerationData.ACTORS_MIN, PRODUCER))),
     genres: Array.from(new Set(generateArrayData(1, GENRES))),
     isWatchList: getRandomBoolean(),
-    isWatched: getRandomBoolean(),
-    isFavorites: getRandomBoolean(),
+    isWatch: getRandomBoolean(),
+    isFavorite: getRandomBoolean(),
     comments: Array.from(new Set(new Array(getRandom(0, comments.length)).fill(null).map(() => getRandomComments()))),
   };
 };
