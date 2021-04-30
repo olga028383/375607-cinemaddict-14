@@ -6,7 +6,7 @@ import FilmDetailsView from '../view/film-details/film-details.js';
 
 import CommentsPresenter from '../presenter/comments.js';
 
-import {render, replace, ContentPosition} from '../utils/render.js';
+import {render, replace, ContentPosition, remove} from '../utils/render.js';
 import {isEscEvent} from '../util.js';
 
 export default class Film {
@@ -148,4 +148,11 @@ export default class Film {
     );
   }
 
+  getId() {
+    return this._film.id;
+  }
+
+  destroy() {
+    remove(this._filmComponent);
+  }
 }

@@ -5,4 +5,9 @@ const EMOTIONS = [
   'angry',
 ];
 
-export {EMOTIONS};
+const SortType = {
+  DEFAULT: 'default',
+  DATE: 'date',
+  RATING: 'rating',
+};
+export {EMOTIONS, SortType};
