@@ -9,6 +9,7 @@ import FilmsListExtraView from '../view/films/films-list-extra.js';
 import ButtonMoreView from '../view/button-more.js';
 
 import FilmPresenter from '../presenter/film.js';
+import CommentsPresenter from '../presenter/comments.js';
 
 import {render, ContentPosition, remove} from '../utils/render.js';
 import {updateItem} from '../utils/common.js';
@@ -23,6 +24,7 @@ export default class FilmList {
     this._mainContainer = mainContainer;
     this._showedFilms = COUNT_FILM_LIST;
     this._films = [];
+    this._comments = [];
     this._filmPresenterList = {};
     this._filmPresenterListTopRating = {};
     this._filmPresenterListTopComments = {};
@@ -43,13 +45,14 @@ export default class FilmList {
     this._setSortTypeChangeHandler = this._setSortTypeChangeHandler.bind(this);
   }
 
-  init(films) {
+  init(films, comments) {
     if (films.length === 0) {
       this._renderMainContainer(this._filmsEmptyComponent.getElement());
       return;
     }
     this._filmLists = films.slice();
     this._films = films;
+    this._comments = comments;
     this._renderSort();
     this._renderFilmsList(ContentPosition.BEFOREEND);
     this._renderButtonMore(ContentPosition.BEFOREEND);
@@ -61,6 +64,12 @@ export default class FilmList {
     const filmPresenter = new FilmPresenter(this._filmChangeHandler);
     filmPresenter.init(film, container);
     presenterList[filmPresenter.getId()] = filmPresenter;
+
+    new CommentsPresenter(this).init(filmPresenter.getComments().length,
+      filmPresenter.getCloseModalEscKeydownHandler(),
+      this._comments,
+      filmPresenter.getCommentsContainer(),
+    );
   }
 
   _renderMainContainer(element) {
