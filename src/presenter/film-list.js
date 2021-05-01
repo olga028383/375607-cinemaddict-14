@@ -87,7 +87,7 @@ export default class FilmList {
       this._initFilm(film, this._filmsListContainerComponent, this._filmPresenterList);
     });
 
-    render(this._filmsListElement, this._filmsListContainerComponent.getElement(), position);
+    render(this._filmsListElement, this._filmsListContainerComponent.getElement(), ContentPosition.BEFOREEND);
     render(this._layoutFilmsComponent.getElement(), this._filmsListElement, position);
 
   }
@@ -111,7 +111,7 @@ export default class FilmList {
         render(this._filmsListElement, this._buttonMoreComponent.getElement(), ContentPosition.BEFOREEND);
 
         if (this._films.length - this._showedFilms === 0) {
-          this._buttonMoreComponent.getElement().style.display = 'none';
+          remove(this._buttonMoreComponent);
         }
       });
     }
@@ -146,7 +146,7 @@ export default class FilmList {
       this._initFilm(film, filmsListContainerComponent, presenterList);
     });
 
-    render(FilmsListExtraElement.getElement(), filmsListContainerComponent.getElement(), 'beforeend');
+    render(FilmsListExtraElement.getElement(), filmsListContainerComponent.getElement(), ContentPosition.BEFOREEND);
 
     return FilmsListExtraElement.getElement();
   }
@@ -185,7 +185,7 @@ export default class FilmList {
   }
 
   _setSortTypeChangeHandler(sort) {
-    if (this._currentSortType == sort) {
+    if (this._currentSortType === sort) {
       return;
     }
 

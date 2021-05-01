@@ -19,6 +19,11 @@ export default class Sort extends AbstractView {
     return createSortTemplate();
   }
 
+  setSortTypeChangeHandler(callback) {
+    this.callback.sortTypeChange = callback;
+    this.getElement().addEventListener('click', this._sortTypeChangeHandler);
+  }
+
   _sortTypeChangeHandler(evt) {
     if (evt.target.tagName !== 'A') {
       return;
@@ -26,11 +31,11 @@ export default class Sort extends AbstractView {
 
     evt.preventDefault();
     this.callback.sortTypeChange(evt.target.dataset.sortType);
-  }
 
-  setSortTypeChangeHandler(callback) {
-    this.callback.sortTypeChange = callback;
-    this.getElement().addEventListener('click', this._sortTypeChangeHandler);
+    const currentButton = this.getElement().querySelector('.sort__button--active');
+    currentButton.classList.remove('sort__button--active');
+
+    this.getElement().querySelector(`[data-sort-type=${evt.target.dataset.sortType}]`).classList.add('sort__button--active');
   }
 }
 

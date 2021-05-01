@@ -1,8 +1,8 @@
 import AbstractView from '../view/abstract-view.js';
 
 const ContentPosition = {
-  AFTERBEGIN: 'afterbegin',
-  BEFOREEND: 'beforeend',
+  AFTERBEGIN: 'afterBegin',
+  BEFOREEND: 'beforeEnd',
 };
 
 const render = (container, template, place) => {

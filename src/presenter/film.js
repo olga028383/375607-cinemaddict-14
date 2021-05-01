@@ -37,7 +37,7 @@ export default class Film {
       this._container = container;
       this._filmComponent = new FilmView(this._film);
       this._filmDetailsComponent = new FilmDetailsView(this._film);
-      render(this._container.getElement(), this._filmComponent.getElement(), 'beforeend');
+      render(this._container.getElement(), this._filmComponent.getElement(), ContentPosition.BEFOREEND);
 
     } else {
 
@@ -54,6 +54,26 @@ export default class Film {
 
     this._renderFilm();
     return this._filmComponent.getElement();
+  }
+
+  getId() {
+    return this._film.id;
+  }
+
+  getComments() {
+    return this._film.comments;
+  }
+
+  getCloseModalEscKeydownHandler() {
+    return this._closeModalEscKeydownHandler;
+  }
+
+  getCommentsContainer() {
+    return this._filmDetailBottomComponent;
+  }
+
+  destroy() {
+    remove(this._filmComponent);
   }
 
   _renderFilm() {
@@ -77,7 +97,7 @@ export default class Film {
 
   _openModal() {
     this._bodyElement.classList.add('hide-overflow');
-    render(this._bodyElement, this._filmDetailContainerComponent.getElement(), 'beforeend');
+    render(this._bodyElement, this._filmDetailContainerComponent.getElement(), ContentPosition.BEFOREEND);
   }
 
   _closeModal() {
@@ -138,24 +158,5 @@ export default class Film {
         },
       ),
     );
-  }
-
-  getId() {
-    return this._film.id;
-  }
-
-  getComments() {
-    return this._film.comments;
-  }
-
-  getCloseModalEscKeydownHandler(){
-    return this._closeModalEscKeydownHandler;
-  }
-
-  getCommentsContainer(){
-    return this._filmDetailBottomComponent;
-  }
-  destroy() {
-    remove(this._filmComponent);
   }
 }

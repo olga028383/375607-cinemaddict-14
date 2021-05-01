@@ -8,6 +8,6 @@ const getDateFormat = (data, format) => dayjs(data).format(format);
 const getId = () => nanoid();
 
 const sortDate = (dateA, dateB) => {
-  return dayjs(dateA.date).diff(dayjs(dateB.date));
+  return dayjs(dateB.date).diff(dayjs(dateA.date));
 };
 export {getYear, getDateFormat, getId, sortDate};
