@@ -22,6 +22,16 @@ export default class CommentsForm extends AbstractView {
     return createCommentsFormTemplate();
   }
 
+  setFocusHandler(callback) {
+    this.callback.focus = callback;
+    this._getField().addEventListener('focus', this._focusHandler);
+  }
+
+  setBlurHandler(callback) {
+    this.callback.blur = callback;
+    this._getField().addEventListener('blur', this._blurHandler);
+  }
+
   _focusHandler(evt) {
     evt.preventDefault();
     this.callback.focus();
@@ -37,15 +47,5 @@ export default class CommentsForm extends AbstractView {
       this.field = this._element.querySelector('.film-details__comment-input');
     }
     return this.field;
-  }
-
-  setFocusHandler(callback) {
-    this.callback.focus = callback;
-    this._getField().addEventListener('focus', this._focusHandler);
-  }
-
-  setBlurHandler(callback) {
-    this.callback.blur = callback;
-    this._getField().addEventListener('blur', this._blurHandler);
   }
 }

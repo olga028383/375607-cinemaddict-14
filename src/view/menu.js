@@ -27,5 +27,4 @@ export default class Menu extends AbstractView{
   getTemplate() {
     return createMenuTemplate(this._filters);
   }
-
 }

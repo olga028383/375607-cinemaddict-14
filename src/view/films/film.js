@@ -57,26 +57,6 @@ export default class Film extends AbstractView {
     return createCardTemplate(this._card);
   }
 
-  _openModalClickHandler(evt) {
-    evt.preventDefault();
-    this.callback.openModalClick();
-  }
-
-  _watchListClickHandler(evt) {
-    evt.preventDefault();
-    this.callback.watchListClick();
-  }
-
-  _watchClickHandler(evt) {
-    evt.preventDefault();
-    this.callback.watchClick();
-  }
-
-  _favoriteClickHandler(evt) {
-    evt.preventDefault();
-    this.callback.favoriteClick();
-  }
-
   setOpenModalClickHandler(callback) {
     this.callback.openModalClick = callback;
 
@@ -99,6 +79,26 @@ export default class Film extends AbstractView {
   setFavoriteClickHandler(callback) {
     this.callback.favoriteClick = callback;
     this.getElement().querySelector('.film-card__controls-item--favorite').addEventListener('click', this._favoriteClickHandler);
+  }
+
+  _openModalClickHandler(evt) {
+    evt.preventDefault();
+    this.callback.openModalClick();
+  }
+
+  _watchListClickHandler(evt) {
+    evt.preventDefault();
+    this.callback.watchListClick();
+  }
+
+  _watchClickHandler(evt) {
+    evt.preventDefault();
+    this.callback.watchClick();
+  }
+
+  _favoriteClickHandler(evt) {
+    evt.preventDefault();
+    this.callback.favoriteClick();
   }
 }
 

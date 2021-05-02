@@ -4,15 +4,13 @@ import FilmDetailsTopView from '../view/film-details/film-details-top.js';
 import FilmDetailsBottomView from '../view/film-details/film-details-bottom.js';
 import FilmDetailsView from '../view/film-details/film-details.js';
 
-import CommentsPresenter from '../presenter/comments.js';
-
-import {render, replace, ContentPosition} from '../utils/render.js';
+import {render, replace, ContentPosition, remove} from '../utils/render.js';
 import {isEscEvent} from '../util.js';
 
 export default class Film {
   constructor(filmChangeHandler) {
     this._film = null;
-    this.container = null;
+    this._container = null;
     this._filmComponent = null;
     this._filmDetailsComponent = null;
 
@@ -36,10 +34,10 @@ export default class Film {
 
     if (!this._film) {
       this._film = film;
-      this.container = container;
+      this._container = container;
       this._filmComponent = new FilmView(this._film);
       this._filmDetailsComponent = new FilmDetailsView(this._film);
-      render(this.container.getElement(), this._filmComponent.getElement(), 'beforeend');
+      render(this._container.getElement(), this._filmComponent.getElement(), ContentPosition.BEFOREEND);
 
     } else {
 
@@ -58,9 +56,24 @@ export default class Film {
     return this._filmComponent.getElement();
   }
 
-  _initComments(container) {
-    const commentsPresenter = new CommentsPresenter(this);
-    commentsPresenter.init(container);
+  getId() {
+    return this._film.id;
+  }
+
+  getComments() {
+    return this._film.comments;
+  }
+
+  getCloseModalEscKeydownHandler() {
+    return this._closeModalEscKeydownHandler;
+  }
+
+  getCommentsContainer() {
+    return this._filmDetailBottomComponent;
+  }
+
+  destroy() {
+    remove(this._filmComponent);
   }
 
   _renderFilm() {
@@ -79,13 +92,12 @@ export default class Film {
   _renderFilmDetail() {
     render(this._filmDetailContainerComponent.getElement(), this._filmDetailTopComponent.getElement(), ContentPosition.BEFOREEND);
     render(this._filmDetailTopComponent.getElement(), this._filmDetailsComponent.getElement(), ContentPosition.BEFOREEND);
-    this._initComments(this._filmDetailBottomComponent);
     render(this._filmDetailContainerComponent.getElement(), this._filmDetailBottomComponent.getElement(), ContentPosition.BEFOREEND);
   }
 
   _openModal() {
     this._bodyElement.classList.add('hide-overflow');
-    render(this._bodyElement, this._filmDetailContainerComponent.getElement(), 'beforeend');
+    render(this._bodyElement, this._filmDetailContainerComponent.getElement(), ContentPosition.BEFOREEND);
   }
 
   _closeModal() {
@@ -147,5 +159,4 @@ export default class Film {
       ),
     );
   }
-
 }

@@ -19,15 +19,15 @@ export default class FilmDetailsTop extends AbstractView {
     return createFilmDetailsTopTemplate();
   }
 
-  _clickHandler(evt) {
-    evt.preventDefault();
-    this.callback.click();
-  }
-
   setClickHandler(callback) {
     this.callback.click = callback;
 
     this._close = this.getElement().querySelector('.film-details__close-btn');
     this._close.addEventListener('click', this._clickHandler);
+  }
+
+  _clickHandler(evt) {
+    evt.preventDefault();
+    this.callback.click();
   }
 }

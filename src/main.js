@@ -23,8 +23,6 @@ const filters = generateFilter(films);
 render(headerElement, new RankUserView().getElement(), ContentPosition.BEFOREEND);
 render(mainElement, new MenuView(filters).getElement(), ContentPosition.AFTERBEGIN);
 
-
-const filmListPresenter = new FilmListPresenter(mainElement);
-filmListPresenter.init(films);
+new FilmListPresenter(mainElement).init(films, comments);
 
 render(footerElement, new StatisticsView(films.length.toLocaleString()).getElement(), ContentPosition.BEFOREEND);
