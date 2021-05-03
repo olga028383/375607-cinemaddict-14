@@ -1,4 +1,12 @@
-import AbstractView from '../abstract-view.js';
+import Smart from '../smart.js';
+import {EMOTIONS} from '../../constants.js';
+
+const createEmojiFieldTemplate = (emotion) => {
+  return `<input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-${emotion}" value="${emotion}"><label class="film-details__emoji-label" for="emoji-${emotion}"><img src="./images/emoji/${emotion}.png" width="30" height="30" alt="emoji"></label>`;
+};
+const createEmojiFieldsTemplate = () => {
+  return EMOTIONS.map((emotion) => createEmojiFieldTemplate(emotion)).join('');
+};
 
 const createCommentsFormTemplate = () => {
   return ` <div class="film-details__new-comment">
@@ -7,10 +15,11 @@ const createCommentsFormTemplate = () => {
               <label class="film-details__comment-label">
                 <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment"></textarea>
               </label>
+              <div class="film-details__emoji-list">${createEmojiFieldsTemplate()}</div>
           </div>`;
 };
 
-export default class CommentsForm extends AbstractView {
+export default class CommentsForm extends Smart {
   constructor() {
     super();
     this._field = null;
@@ -30,6 +39,10 @@ export default class CommentsForm extends AbstractView {
   setBlurHandler(callback) {
     this.callback.blur = callback;
     this._getField().addEventListener('blur', this._blurHandler);
+  }
+
+  restoreHandlers() {
+
   }
 
   _focusHandler(evt) {
