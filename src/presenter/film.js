@@ -1,5 +1,6 @@
 import FilmView from '../view/films/film.js';
 import FilmDetailsContainerView from '../view/film-details/film-details-container.js';
+import FilmDetailsFormWrapperView from '../view/film-details/fillm-details-form-wrapper.js';
 import FilmDetailsTopView from '../view/film-details/film-details-top.js';
 import FilmDetailsBottomView from '../view/film-details/film-details-bottom.js';
 import FilmDetailsView from '../view/film-details/film-details.js';
@@ -16,6 +17,7 @@ export default class Film {
 
     this._filmChangeHandler = filmChangeHandler;
     this._filmDetailContainerComponent = new FilmDetailsContainerView();
+    this._filmDetailFormWrapperComponent = new FilmDetailsFormWrapperView();
     this._filmDetailTopComponent = new FilmDetailsTopView();
     this._filmDetailBottomComponent = new FilmDetailsBottomView();
 
@@ -28,6 +30,7 @@ export default class Film {
     this._watchListClickHandler = this._watchListClickHandler.bind(this);
     this._watchClickHandler = this._watchClickHandler.bind(this);
     this._favoriteClickHandler = this._favoriteClickHandler.bind(this);
+    this._submitFormHandler = this._submitFormHandler.bind(this);
   }
 
   init(film, container) {
@@ -90,9 +93,10 @@ export default class Film {
   }
 
   _renderFilmDetail() {
-    render(this._filmDetailContainerComponent.getElement(), this._filmDetailTopComponent.getElement(), ContentPosition.BEFOREEND);
+    render(this._filmDetailContainerComponent.getElement(), this._filmDetailFormWrapperComponent.getElement(), ContentPosition.BEFOREEND);
+    render(this._filmDetailFormWrapperComponent.getElement(), this._filmDetailTopComponent.getElement(), ContentPosition.BEFOREEND);
     render(this._filmDetailTopComponent.getElement(), this._filmDetailsComponent.getElement(), ContentPosition.BEFOREEND);
-    render(this._filmDetailContainerComponent.getElement(), this._filmDetailBottomComponent.getElement(), ContentPosition.BEFOREEND);
+    render(this._filmDetailFormWrapperComponent.getElement(), this._filmDetailBottomComponent.getElement(), ContentPosition.BEFOREEND);
   }
 
   _openModal() {
@@ -158,5 +162,9 @@ export default class Film {
         },
       ),
     );
+  }
+
+  _submitFormHandler(){
+    //сюда придут данные и их нужно будет отправить
   }
 }

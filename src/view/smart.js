@@ -1,4 +1,4 @@
-import AbstractView from "./abstract-view.js";
+import AbstractView from './abstract-view.js';
 
 export default class Smart extends AbstractView {
   restoreHandlers() {
@@ -16,7 +16,7 @@ export default class Smart extends AbstractView {
     parent.replaceChild(newElement, prevElement);
   }
 
-  updateData(update) {
+  updateData(update, justDataUpdating) {
     if (!update) {
       return;
     }
@@ -26,6 +26,10 @@ export default class Smart extends AbstractView {
       this._data,
       update,
     );
+
+    if (justDataUpdating) {
+      return;
+    }
 
     this.updateElement();
   }
