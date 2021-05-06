@@ -4,7 +4,6 @@ import CommentsContainerView from '../view/comments/comments-container.js';
 import CommentsFormView from '../view/comments/comments-form.js';
 import CommentsListView from '../view/comments/comments-list.js';
 import CommentView from '../view/comments/comment.js';
-import EmojiListView from '../view/comments/emoji-list.js';
 
 export default class Comments {
   constructor() {
@@ -37,7 +36,6 @@ export default class Comments {
   _renderCommentsForm() {
     this._renderComment();
     render(this._commentsContainerComponent.getElement(), this._commentsListComponent.getElement(), ContentPosition.BEFOREEND);
-    render(this._commentsFormComponent.getElement(), new EmojiListView().getElement(), ContentPosition.BEFOREEND);
     render(this._commentsContainerComponent.getElement(), this._commentsFormComponent.getElement(), ContentPosition.BEFOREEND);
   }
 
