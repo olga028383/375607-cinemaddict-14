@@ -10,6 +10,7 @@
     "start": "webpack-dev-server --open"
   },
   "devDependencies": {
+    "dayjs": "^1.9.7",
     "eslint": "7.13.0",
     "eslint-config-htmlacademy": "3.0.0",
     "webpack": "4.44.2",
@@ -20,7 +21,6 @@
     "node": "10"
   },
   "dependencies": {
-    "dayjs": "1.9.5",
     "nanoid": "2.1.8"
   }
 }

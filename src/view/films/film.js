@@ -1,4 +1,4 @@
-import {getYear} from '../../lib.js';
+import {getYear, getTime, getDateFormat} from '../../lib.js';
 import {getLengthTimeFormat, clipText} from '../../util.js';
 import AbstractView from '../abstract-view.js';
 
@@ -29,7 +29,7 @@ const createCardTemplate = (film = {}) => {
           <p class="film-card__rating">${rating}</p>
           <p class="film-card__info">
             <span class="film-card__year">${getYear(date)}</span>
-            <span class="film-card__duration">${getLengthTimeFormat(runTime)}</span>
+            <span class="film-card__duration">${getDateFormat(getTime(runTime), 'h')}h ${getDateFormat(getTime(runTime), 'm')}m</span>
             <span class="film-card__genre">${genres}</span>
           </p>
           <img src="./images/posters/${poster}" alt="" class="film-card__poster">
