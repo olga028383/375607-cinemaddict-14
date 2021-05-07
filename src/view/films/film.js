@@ -1,5 +1,5 @@
 import {getYear, getTime, getDateFormat} from '../../lib.js';
-import {getLengthTimeFormat, clipText} from '../../util.js';
+import {clipText} from '../../util.js';
 import AbstractView from '../abstract-view.js';
 
 const MAX_LENGTH_DESCRIPTION = 140;

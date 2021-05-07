@@ -2,7 +2,7 @@ import Smart from '../smart.js';
 import {EMOTIONS} from '../../constants.js';
 
 const createEmojiFieldTemplate = (emotion, activeEmotion) => {
-  let checked = (emotion === activeEmotion) ? 'checked' : '';
+  const checked = (emotion === activeEmotion) ? 'checked' : '';
   return `<input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" ${checked} id="emoji-${emotion}" value="${emotion}"><label class="film-details__emoji-label" for="emoji-${emotion}"><img src="./images/emoji/${emotion}.png" width="30" height="30" alt="emoji"></label>`;
 };
 const createEmojiFieldsTemplate = (activeEmotion) => {
