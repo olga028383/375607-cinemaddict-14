@@ -1,5 +1,4 @@
-import {getDateFormat} from '../../lib.js';
-import {getLengthTimeFormat} from '../../util.js';
+import {getDateFormat, getTime} from '../../lib.js';
 import AbstractView from '../abstract-view.js';
 
 const createGenresTemplate = (genres) => {
@@ -70,7 +69,7 @@ const createCardDetailTemplate = (film = {}) => {
             </tr>
             <tr class="film-details__row">
               <td class="film-details__term">Runtime</td>
-              <td class="film-details__cell">${getLengthTimeFormat(runTime)}</td>
+              <td class="film-details__cell">${getTime(runTime, 'H[h] mm[m]')}</td>
             </tr>
             <tr class="film-details__row">
               <td class="film-details__term">Country</td>
