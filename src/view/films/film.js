@@ -1,5 +1,5 @@
-import {getYear} from '../../lib.js';
-import {getLengthTimeFormat, clipText} from '../../util.js';
+import {getYear, getTime} from '../../lib.js';
+import {clipText} from '../../util.js';
 import AbstractView from '../abstract-view.js';
 
 const MAX_LENGTH_DESCRIPTION = 140;
@@ -29,7 +29,7 @@ const createCardTemplate = (film = {}) => {
           <p class="film-card__rating">${rating}</p>
           <p class="film-card__info">
             <span class="film-card__year">${getYear(date)}</span>
-            <span class="film-card__duration">${getLengthTimeFormat(runTime)}</span>
+            <span class="film-card__duration">${getTime(runTime, 'H[h] mm[m]')}</span>
             <span class="film-card__genre">${genres}</span>
           </p>
           <img src="./images/posters/${poster}" alt="" class="film-card__poster">
