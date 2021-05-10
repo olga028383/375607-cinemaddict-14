@@ -5,22 +5,25 @@ import FilmDetailsTopView from '../view/film-details/film-details-top.js';
 import FilmDetailsBottomView from '../view/film-details/film-details-bottom.js';
 import FilmDetailsView from '../view/film-details/film-details.js';
 
+import CommentsPresenter from '../presenter/comments.js';
+
 import {render, replace, ContentPosition, remove} from '../utils/render.js';
+import {UserAction, UpdateType, FilterType} from '../constants.js';
 import {isEscEvent} from '../util.js';
 
 export default class Film {
-  constructor(filmChangeHandler) {
+  constructor(filmChangeHandler, filterModel, commentsModel, filmModel) {
+    this._filterModel = filterModel;
+    this._commentsModel = commentsModel;
+    this._filmModel = filmModel;
     this._film = null;
     this._container = null;
     this._filmComponent = null;
-    this._filmDetailsComponent = null;
+    this._setRenderTopHandler = null;
 
     this._filmChangeHandler = filmChangeHandler;
-    this._filmDetailContainerComponent = new FilmDetailsContainerView();
-    this._filmDetailFormWrapperComponent = new FilmDetailsFormWrapperView();
-    this._filmDetailTopComponent = new FilmDetailsTopView();
-    this._filmDetailBottomComponent = new FilmDetailsBottomView();
-
+    this._filmDetailContainerComponent = null;
+    this._filmCommentsPresenter = null;
     this._bodyElement = document.body;
 
     this._openModalHandler = this._openModalHandler.bind(this);
@@ -30,6 +33,7 @@ export default class Film {
     this._watchListClickHandler = this._watchListClickHandler.bind(this);
     this._watchClickHandler = this._watchClickHandler.bind(this);
     this._favoriteClickHandler = this._favoriteClickHandler.bind(this);
+
     this._submitFormHandler = this._submitFormHandler.bind(this);
   }
 
@@ -39,26 +43,30 @@ export default class Film {
       this._film = film;
       this._container = container;
       this._filmComponent = new FilmView(this._film);
-      this._filmDetailsComponent = new FilmDetailsView(this._film);
       render(this._container.getElement(), this._filmComponent.getElement(), ContentPosition.BEFOREEND);
 
     } else {
 
       const oldElement = this._filmComponent.getElement();
-      const oldElementDetail = this._filmDetailsComponent.getElement();
-
       this._film = film;
       this._filmComponent = new FilmView(this._film);
-      this._filmDetailsComponent = new FilmDetailsView(this._film);
-
       replace(this._filmComponent.getElement(), oldElement);
-      replace(this._filmDetailsComponent.getElement(), oldElementDetail);
+
+      if (this._filmDetailContainerComponent) {
+        const oldElementDetail = this._filmDetailContainerComponent.getElement();
+
+        this._filmDetailContainerComponent = this._renderFilmDetail();
+        replace(this._filmDetailContainerComponent, oldElementDetail);
+      }
     }
 
     this._renderFilm();
     return this._filmComponent.getElement();
   }
 
+  renderTopHandler(callback){
+    this._setRenderTopHandler = callback;
+  }
   getId() {
     return this._film.id;
   }
@@ -80,34 +88,54 @@ export default class Film {
   }
 
   _renderFilm() {
-    this._renderFilmDetail();
     this._filmComponent.setOpenModalClickHandler(this._openModalHandler);
-
     this._filmComponent.setWatchListClickHandler(this._watchListClickHandler);
     this._filmComponent.setWatchClickHandler(this._watchClickHandler);
     this._filmComponent.setFavoriteClickHandler(this._favoriteClickHandler);
-
-    this._filmDetailsComponent.setWatchListClickHandler(this._watchListClickHandler);
-    this._filmDetailsComponent.setWatchClickHandler(this._watchClickHandler);
-    this._filmDetailsComponent.setFavoriteClickHandler(this._favoriteClickHandler);
   }
 
   _renderFilmDetail() {
-    render(this._filmDetailContainerComponent.getElement(), this._filmDetailFormWrapperComponent.getElement(), ContentPosition.BEFOREEND);
-    render(this._filmDetailFormWrapperComponent.getElement(), this._filmDetailTopComponent.getElement(), ContentPosition.BEFOREEND);
-    render(this._filmDetailTopComponent.getElement(), this._filmDetailsComponent.getElement(), ContentPosition.BEFOREEND);
-    render(this._filmDetailFormWrapperComponent.getElement(), this._filmDetailBottomComponent.getElement(), ContentPosition.BEFOREEND);
+    const detailsComponent = new FilmDetailsView(this._film);
+    const filmDetailContainerComponent = new FilmDetailsContainerView();
+    const filmDetailFormWrapperComponent = new FilmDetailsFormWrapperView();
+    const filmDetailTopComponent = new FilmDetailsTopView();
+    const filmDetailBottomComponent = new FilmDetailsBottomView();
+
+    render(filmDetailContainerComponent.getElement(), filmDetailFormWrapperComponent.getElement(), ContentPosition.BEFOREEND);
+    render(filmDetailFormWrapperComponent.getElement(), filmDetailTopComponent.getElement(), ContentPosition.BEFOREEND);
+    render(filmDetailTopComponent.getElement(), detailsComponent.getElement(), ContentPosition.BEFOREEND);
+    render(filmDetailFormWrapperComponent.getElement(), filmDetailBottomComponent.getElement(), ContentPosition.BEFOREEND);
+
+    this._initComments(filmDetailBottomComponent);
+
+    detailsComponent.setWatchListClickHandler(this._watchListClickHandler);
+    detailsComponent.setWatchClickHandler(this._watchClickHandler);
+    detailsComponent.setFavoriteClickHandler(this._favoriteClickHandler);
+
+    filmDetailTopComponent.setClickHandler(this._closeModalHandler);
+
+    return filmDetailContainerComponent;
+  }
+
+  _initComments(container) {
+    this._filmCommentsPresenter = new CommentsPresenter(this._commentsModel, this._filmModel, this._filmChangeHandler);
+    this._filmCommentsPresenter.init(this._film, this._film.comments, this.getCloseModalEscKeydownHandler(this._film.comments.length), container);
   }
 
   _openModal() {
     this._bodyElement.classList.add('hide-overflow');
+    this._filmDetailContainerComponent = this._renderFilmDetail();
     render(this._bodyElement, this._filmDetailContainerComponent.getElement(), ContentPosition.BEFOREEND);
   }
 
   _closeModal() {
     this._bodyElement.classList.remove('hide-overflow');
-    this._filmDetailContainerComponent.getElement().remove();
-    document.removeEventListener('keydown', this._closeModalEscKeydownHandler);
+    this._filmDetailsComponent = null;
+    remove(this._filmDetailContainerComponent);
+
+    if(this._setRenderTopHandler){
+      this._setRenderTopHandler();
+    }
   }
 
   _closeModalEscKeydownHandler(evt) {
@@ -123,13 +151,19 @@ export default class Film {
 
   _openModalHandler() {
     this._openModal();
-    this._filmDetailTopComponent.setClickHandler(this._closeModalHandler);
+
 
     document.addEventListener('keydown', this._closeModalEscKeydownHandler);
   }
 
+  _getUpdateType(filterType) {
+    return (this._filterModel.getFilter() !== filterType || this._filterModel.getFilter() === FilterType.ALL) ? [UpdateType.FILM_PREVIEW] : [UpdateType.FILM_LIST, UpdateType.FILM_PREVIEW];
+  }
+
   _watchListClickHandler() {
     this._filmChangeHandler(
+      UserAction.UPDATE_FILM,
+      this._getUpdateType(FilterType.WATCHLIST),
       Object.assign(
         {},
         this._film,
@@ -142,6 +176,8 @@ export default class Film {
 
   _watchClickHandler() {
     this._filmChangeHandler(
+      UserAction.UPDATE_FILM,
+      this._getUpdateType(FilterType.HISTORY),
       Object.assign(
         {},
         this._film,
@@ -154,6 +190,8 @@ export default class Film {
 
   _favoriteClickHandler() {
     this._filmChangeHandler(
+      UserAction.UPDATE_FILM,
+      this._getUpdateType(FilterType.FAVORITES),
       Object.assign(
         {},
         this._film,
@@ -164,7 +202,7 @@ export default class Film {
     );
   }
 
-  _submitFormHandler(){
+  _submitFormHandler() {
     //сюда придут данные и их нужно будет отправить
   }
 }
