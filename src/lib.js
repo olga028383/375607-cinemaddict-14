@@ -7,7 +7,9 @@ dayjs.extend(duration);
 const getYear = (data) => dayjs(data).year();
 
 const getDateFormat = (data, format) => dayjs(data).format(format);
+
 const getTime = (data, format) => dayjs.duration(data, 'minutes').format(format);
+
 const getId = () => nanoid();
 
 const sortDate = (dateA, dateB) => {

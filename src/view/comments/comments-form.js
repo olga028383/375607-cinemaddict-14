@@ -100,6 +100,4 @@ export default class CommentsForm extends Smart {
     }
     return this._field;
   }
-
-
 }
