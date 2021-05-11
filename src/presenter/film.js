@@ -8,7 +8,7 @@ import FilmDetailsView from '../view/film-details/film-details.js';
 import CommentsPresenter from '../presenter/comments.js';
 
 import {render, replace, ContentPosition, remove} from '../utils/render.js';
-import {UserAction, UpdateType, FilterType} from '../constants.js';
+import {UserAction, UpdateType, FilterType, CODES} from '../constants.js';
 import {isEscEvent} from '../util.js';
 
 export default class Film {
@@ -26,6 +26,7 @@ export default class Film {
     this._filmCommentsPresenter = null;
     this._bodyElement = document.body;
 
+
     this._openModalHandler = this._openModalHandler.bind(this);
     this._closeModalHandler = this._closeModalHandler.bind(this);
     this._closeModalEscKeydownHandler = this._closeModalEscKeydownHandler.bind(this);
@@ -34,7 +35,9 @@ export default class Film {
     this._watchClickHandler = this._watchClickHandler.bind(this);
     this._favoriteClickHandler = this._favoriteClickHandler.bind(this);
 
-    this._submitFormHandler = this._submitFormHandler.bind(this);
+    this._press = new Set();
+    this._setKeysHandler = this._setKeysHandler.bind(this);
+    this._deleteKeysHandler = this._deleteKeysHandler.bind(this);
   }
 
   init(film, container) {
@@ -54,9 +57,10 @@ export default class Film {
 
       if (this._filmDetailContainerComponent) {
         const oldElementDetail = this._filmDetailContainerComponent.getElement();
-
+        const scrollPosition = oldElementDetail.scrollTop;
         this._filmDetailContainerComponent = this._renderFilmDetail();
         replace(this._filmDetailContainerComponent, oldElementDetail);
+        this._filmDetailContainerComponent.getElement().scrollTop = scrollPosition;
       }
     }
 
@@ -64,23 +68,16 @@ export default class Film {
     return this._filmComponent.getElement();
   }
 
-  renderTopHandler(callback){
+  renderTopHandler(callback) {
     this._setRenderTopHandler = callback;
   }
+
   getId() {
     return this._film.id;
   }
 
-  getComments() {
-    return this._film.comments;
-  }
-
   getCloseModalEscKeydownHandler() {
     return this._closeModalEscKeydownHandler;
-  }
-
-  getCommentsContainer() {
-    return this._filmDetailBottomComponent;
   }
 
   destroy() {
@@ -113,7 +110,6 @@ export default class Film {
     detailsComponent.setFavoriteClickHandler(this._favoriteClickHandler);
 
     filmDetailTopComponent.setClickHandler(this._closeModalHandler);
-
     return filmDetailContainerComponent;
   }
 
@@ -133,9 +129,13 @@ export default class Film {
     this._filmDetailsComponent = null;
     remove(this._filmDetailContainerComponent);
 
-    if(this._setRenderTopHandler){
+    if (this._setRenderTopHandler) {
       this._setRenderTopHandler();
     }
+
+    document.removeEventListener('keydown', this._closeModalEscKeydownHandler);
+    document.removeEventListener('keydown', this._setKeysHandler);
+    document.removeEventListener('keyup', this._deleteKeysHandler);
   }
 
   _closeModalEscKeydownHandler(evt) {
@@ -149,11 +149,30 @@ export default class Film {
     this._closeModal();
   }
 
+  _setKeysHandler(evt) {
+    this._press.add(evt.keyCode);
+
+    for (const code of CODES) {
+      if (!this._press.has(code)) {
+        return;
+      }
+    }
+
+    this._press.clear();
+
+    this._filmCommentsPresenter.addCommentHandler();
+  }
+
+  _deleteKeysHandler(evt) {
+    this._press.delete(evt.keyCode);
+  }
+
   _openModalHandler() {
     this._openModal();
 
-
     document.addEventListener('keydown', this._closeModalEscKeydownHandler);
+    document.addEventListener('keydown', this._setKeysHandler);
+    document.addEventListener('keyup', this._deleteKeysHandler);
   }
 
   _getUpdateType(filterType) {
@@ -202,7 +221,4 @@ export default class Film {
     );
   }
 
-  _submitFormHandler() {
-    //сюда придут данные и их нужно будет отправить
-  }
 }

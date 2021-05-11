@@ -31,10 +31,6 @@ export default class FilmList {
     this._filmPresenterListTopRating = {};
     this._filmPresenterListTopComments = {};
 
-    this._commentsPresenterList = {};
-    this._commentsPresenterTopRating = {};
-    this._commentsPresenterTopComments = {};
-
     this._buttonMoreComponent = null;
 
     this._sortComponent = null;
@@ -119,7 +115,7 @@ export default class FilmList {
 
   _renderFilmsList(films, position) {
     films.slice(0, this._showedFilms).forEach((film) => {
-      this._initFilm(film, this._filmsListContainerComponent, this._filmPresenterList, this._commentsPresenterList);
+      this._initFilm(film, this._filmsListContainerComponent, this._filmPresenterList);
     });
 
     render(this._filmsListElement, this._filmsListContainerComponent.getElement(), ContentPosition.BEFOREEND);
@@ -139,7 +135,7 @@ export default class FilmList {
         this._showedFilms = this._showedFilms + loadedCards.length;
 
         loadedCards.forEach((film) => {
-          this._initFilm(film, this._filmsListContainerComponent, this._filmPresenterList, this._commentsPresenterList);
+          this._initFilm(film, this._filmsListContainerComponent, this._filmPresenterList);
         });
 
         render(this._filmsListElement, this._filmsListContainerComponent.getElement(), ContentPosition.BEFOREEND);

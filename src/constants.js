@@ -31,4 +31,5 @@ const UpdateType = {
   FILM_TOP_COMMENT: 'FILM_TOP_COMMENT',
 };
 
-export {EMOTIONS, SortType, FilterType, UserAction, UpdateType};
+const CODES = [17, 13];
+export {EMOTIONS, SortType, FilterType, UserAction, UpdateType, CODES};

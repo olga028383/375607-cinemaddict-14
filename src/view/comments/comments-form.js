@@ -1,5 +1,6 @@
 import Smart from '../smart.js';
 import {EMOTIONS} from '../../constants.js';
+import {escapeText} from '../../lib.js';
 
 const createEmojiFieldTemplate = (emotion, activeEmotion) => {
   const checked = (emotion === activeEmotion) ? 'checked' : '';
@@ -43,6 +44,15 @@ export default class CommentsForm extends Smart {
 
   getTemplate() {
     return createCommentsFormTemplate(this._data);
+  }
+
+  getFieldValueEmotion() {
+    const checkedField = this.getElement().querySelector('.film-details__emoji-item[checked]');
+    return checkedField ? checkedField.value : '';
+  }
+
+  getFieldValueDescription() {
+    return escapeText(this._field.value);
   }
 
   setFocusHandler(callback) {

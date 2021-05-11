@@ -54,19 +54,26 @@ export default class Comments {
     this._setBlurCommentFormFieldHandler();
   }
 
-  getFilmID() {
-    return this._filmId;
-  }
-
   _renderComments() {
     this._filmComments.forEach((filmCommentId) => {
       const filmComment = this._commentsModel.getComments().find((comment) => filmCommentId === comment.id);
       const commentComponent = new CommentView(filmComment);
       commentComponent.setDeleteHandler(this._viewActionHandel);
+
       render(this._commentsListComponent.getElement(), commentComponent.getElement(), ContentPosition.BEFOREEND);
     });
 
     this._commentsModel.addObserver(this._commentModelEventHandler);
+  }
+
+  addCommentHandler() {
+    const comment = this._commentsFormComponent.getFieldValueDescription();
+    const emotion = this._commentsFormComponent.getFieldValueEmotion();
+
+    if (comment) {
+      const data = {comment: comment, emotion: emotion};
+      this._viewActionHandel(UserAction.ADD_COMMENT, data);
+    }
   }
 
   _renderCommentsForm() {
@@ -87,25 +94,49 @@ export default class Comments {
     });
   }
 
-  _viewActionHandel(actionType, id) {
+  _viewActionHandel(actionType, data) {
     switch (actionType) {
       case UserAction.DELETE_COMMENT:
-        this._commentsModel.deleteComment(id, this._film.id);
+        this._commentsModel.deleteComment(data, actionType);
+        break;
+      case UserAction.ADD_COMMENT:
+        this._commentsModel.addComment(data, actionType);
         break;
     }
   }
 
-  _commentModelEventHandler(id) {
-    this._filmChangeHandler(
-      UserAction.UPDATE_FILM,
-      [UpdateType.FILM_PREVIEW, UpdateType.FILM_TOP_COMMENT],
-      Object.assign(
-        {},
-        this._film,
-        {
-          comments: this._film.comments.filter((comment) => comment !== id),
-        },
-      ),
-    );
+  _commentModelEventHandler(id, actionType) {
+    switch (actionType) {
+      case UserAction.DELETE_COMMENT:
+        this._filmChangeHandler(
+          UserAction.UPDATE_FILM,
+          [UpdateType.FILM_PREVIEW, UpdateType.FILM_TOP_COMMENT],
+          Object.assign(
+            {},
+            this._film,
+            {
+              comments: this._film.comments.filter((comment) => comment !== id),
+            },
+          ),
+        );
+        break;
+      case UserAction.ADD_COMMENT: {
+        const comments = this._film.comments.slice();
+        comments.push(id);
+
+        this._filmChangeHandler(
+          UserAction.UPDATE_FILM,
+          [UpdateType.FILM_PREVIEW],
+          Object.assign(
+            {},
+            this._film,
+            {
+              comments: comments,
+            },
+          ),
+        );
+        break;
+      }
+    }
   }
 }

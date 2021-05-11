@@ -1,4 +1,5 @@
 import Observer from '../utils/observer.js';
+import {getId} from '../lib.js';
 
 export default class Comments extends Observer {
   constructor() {
@@ -14,11 +15,21 @@ export default class Comments extends Observer {
     this._comments = comments.slice();
   }
 
-  addComment() {
+  addComment(data, action) {
+    const id = getId();
 
+    this._comments.push({
+      id: id,
+      text: data.comment,
+      emotion: data.emotion ? data.emotion : 'smile',
+      author: 'test',
+      data: new Date(),
+    });
+
+    this._notify(id, action);
   }
 
-  deleteComment(id, filmId) {
+  deleteComment(id, action) {
     const index = this._comments.findIndex((comment) => comment.id === id);
 
     if (index === -1) {
@@ -30,6 +41,6 @@ export default class Comments extends Observer {
       ...this._comments.slice(index + 1),
     ];
 
-    this._notify(id, filmId);
+    this._notify(id, action);
   }
 }
