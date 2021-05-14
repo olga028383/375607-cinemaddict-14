@@ -267,6 +267,12 @@ export default class FilmList {
           break;
         case UpdateType.FILM_LIST:
           console.log(this._isModal);
+
+          //здесь нельзя перерисовывать список пока окно открыто
+          //выше в методе _isOpenModal я получаю данные о том, открыто окно или нет, вот как совместить чтобы перерисовка происходила только по закрытию?
+          //и ниже странный код связан именно с этим багом, нельзя переисовывать списоки после действий на открытом окне
+
+
           if (!this._isModal) {
             if (this._filterModel.get() === data) {
               this._clearList({resetRenderedFilmsCount: true, resetSortType: true});
