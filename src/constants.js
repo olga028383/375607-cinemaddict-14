@@ -25,11 +25,12 @@ const UserAction = {
 };
 
 const UpdateType = {
-  FILM_PREVIEW: 'FILM_PREVIEW',
+  FILM: 'FILM',
   FILM_COMMENTS: 'FILM_COMMENTS',
   FILM_LIST: 'FILM_LIST',
   FILM_TOP_COMMENT: 'FILM_TOP_COMMENT',
 };
 
-const CODES = [17, 13];
-export {EMOTIONS, SortType, FilterType, UserAction, UpdateType, CODES};
+const ENTER_CODE = 17;
+
+export {EMOTIONS, SortType, FilterType, UserAction, UpdateType, ENTER_CODE};

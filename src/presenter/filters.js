@@ -10,16 +10,16 @@ export default class Filters {
     this._filmsModel = filmsModel;
     this._menuComponent = null;
 
-    this._handleModelEvent = this._handleModelEvent.bind(this);
+    this._modelEventHandler = this._modelEventHandler.bind(this);
     this._setFiltersClickHandler = this._setFiltersClickHandler.bind(this);
 
-    this._filterModel.addObserver(this._handleModelEvent);
-    this._filmsModel.addObserver(this._handleModelEvent);
+    this._filterModel.addObserver(this._modelEventHandler);
+    this._filmsModel.addObserver(this._modelEventHandler);
   }
 
   init() {
     const prevFilterComponent = this._menuComponent;
-    this._menuComponent = new MenuView(this._getFilters(), this._filterModel.getFilter());
+    this._menuComponent = new MenuView(this._getFilters(), this._filterModel.get());
     this._menuComponent.setFiltersClickHandler(this._setFiltersClickHandler);
 
     if (prevFilterComponent === null) {
@@ -31,12 +31,12 @@ export default class Filters {
     remove(prevFilterComponent);
   }
 
-  _handleModelEvent() {
+  _modelEventHandler() {
     this.init();
   }
 
   _getFilters() {
-    const films = this._filmsModel.getFilms();
+    const films = this._filmsModel.get();
 
     return [
       {
@@ -61,10 +61,10 @@ export default class Filters {
   }
 
   _setFiltersClickHandler(filterType) {
-    if (this._filterModel.getFilter() === filterType) {
+    if (this._filterModel.get() === filterType) {
       return;
     }
 
-    this._filterModel.setFilter([UpdateType.FILM_LIST], filterType);
+    this._filterModel.set([UpdateType.FILM_LIST], filterType);
   }
 }

@@ -46,12 +46,12 @@ export default class CommentsForm extends Smart {
     return createCommentsFormTemplate(this._data);
   }
 
-  getFieldValueEmotion() {
+  getEmotionValue() {
     const checkedField = this.getElement().querySelector('.film-details__emoji-item[checked]');
     return checkedField ? checkedField.value : '';
   }
 
-  getFieldValueDescription() {
+  getDescriptionValue() {
     return escapeText(this._field.value);
   }
 

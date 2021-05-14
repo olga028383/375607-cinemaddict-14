@@ -8,45 +8,31 @@ import CommentView from '../view/comments/comment.js';
 import {UserAction, UpdateType} from '../constants.js';
 
 export default class Comments {
-  constructor(commentsModel, filmModel, filmChangeHandler) {
-    this._commentsModel = commentsModel;
+  constructor(container, updateFilmHandler, closeModalEscKeydownHandler, filmModel, commentsModel) {
+    this._container = container;
+    this._updateFilmHandler = updateFilmHandler;
+    this._closeModalEscKeydownHandler = closeModalEscKeydownHandler;
     this._filmModel = filmModel;
-    this._filmChangeHandler = filmChangeHandler;
+    this._commentsModel = commentsModel;
 
     this._film = null;
-    this._closeModalEscKeydownHandler = null;
     this._commentsContainerComponent = null;
-    this._commentsListComponent = null;
     this._commentsFormComponent = null;
 
-    this._viewActionHandel = this._viewActionHandel.bind(this);
-    this._commentModelEventHandler = this._commentModelEventHandler.bind(this);
+    this._viewActionHandler = this._viewActionHandler.bind(this);
+    this._modelEventHandler = this._modelEventHandler.bind(this);
   }
 
-  init(film, filmComments, closeModalEscKeydownHandler, container) {
+  init(film) {
 
     if (!this._film) {
       this._film = film;
-      this._filmComments = filmComments;
-      this._closeModalEscKeydownHandler = closeModalEscKeydownHandler;
-      this._commentsContainerComponent = new CommentsContainerView(this._filmComments.length);
-      this._commentsListComponent = new CommentsListView();
-      this._commentsFormComponent = new CommentsFormView();
-      this._renderCommentsForm();
-
-      render(container.getElement(), this._commentsContainerComponent.getElement(), ContentPosition.BEFOREEND);
+      this._renderComments();
+      render(this._container.getElement(), this._commentsContainerComponent.getElement(), ContentPosition.BEFOREEND);
 
     } else {
 
-      const oldElement = this._commentsContainerComponent.getElement();
-      this._film = film;
-      this._filmComments = filmComments;
-      this._closeModalEscKeydownHandler = closeModalEscKeydownHandler;
-      this._commentsContainerComponent = new CommentsContainerView(this._filmComments.length);
-      this._commentsListComponent = new CommentsListView();
-      this._commentsFormComponent = new CommentsFormView();
-      this._renderCommentsForm();
-      replace(this._commentsContainerComponent.getElement(), oldElement);
+      this._replaceComponent();
     }
 
 
@@ -54,32 +40,44 @@ export default class Comments {
     this._setBlurCommentFormFieldHandler();
   }
 
-  _renderComments() {
-    this._filmComments.forEach((filmCommentId) => {
-      const filmComment = this._commentsModel.getComments().find((comment) => filmCommentId === comment.id);
-      const commentComponent = new CommentView(filmComment);
-      commentComponent.setDeleteHandler(this._viewActionHandel);
-
-      render(this._commentsListComponent.getElement(), commentComponent.getElement(), ContentPosition.BEFOREEND);
-    });
-
-    this._commentsModel.addObserver(this._commentModelEventHandler);
-  }
-
-  addCommentHandler() {
-    const comment = this._commentsFormComponent.getFieldValueDescription();
-    const emotion = this._commentsFormComponent.getFieldValueEmotion();
+  submitForm() {
+    const comment = this._commentsFormComponent.getDescriptionValue();
+    const emotion = this._commentsFormComponent.getEmotionValue();
 
     if (comment) {
       const data = {comment: comment, emotion: emotion};
-      this._viewActionHandel(UserAction.ADD_COMMENT, data);
+      this._viewActionHandler(UserAction.ADD_COMMENT, data);
     }
   }
 
-  _renderCommentsForm() {
+  _replaceComponent() {
+    const oldElement = this._commentsContainerComponent.getElement();
+    this._film = film;
     this._renderComments();
-    render(this._commentsContainerComponent.getElement(), this._commentsListComponent.getElement(), ContentPosition.BEFOREEND);
+    replace(this._commentsContainerComponent.getElement(), oldElement);
+  }
+
+  _renderComments() {
+    this._commentsContainerComponent = new CommentsContainerView(this._film.comments.length);
+    this._commentsFormComponent = new CommentsFormView();
+    const commentsListComponent = new CommentsListView();
+
+    this._renderCommentsList(commentsListComponent);
+
+    render(this._commentsContainerComponent.getElement(), commentsListComponent.getElement(), ContentPosition.BEFOREEND);
     render(this._commentsContainerComponent.getElement(), this._commentsFormComponent.getElement(), ContentPosition.BEFOREEND);
+  }
+
+  _renderCommentsList(commentsListComponent) {
+    this._film.comments.forEach((filmCommentId) => {
+      const filmComment = this._commentsModel.get().find((comment) => filmCommentId === comment.id);
+      const commentComponent = new CommentView(filmComment);
+      commentComponent.setDeleteHandler(this._viewActionHandler());
+
+      render(commentsListComponent.getElement(), commentComponent.getElement(), ContentPosition.BEFOREEND);
+    });
+
+    this._commentsModel.addObserver(this._modelEventHandler);
   }
 
   _setFocusCommentFormFieldHandler() {
@@ -94,23 +92,26 @@ export default class Comments {
     });
   }
 
-  _viewActionHandel(actionType, data) {
+  _viewActionHandler(actionType, data) {
     switch (actionType) {
       case UserAction.DELETE_COMMENT:
         this._commentsModel.deleteComment(data, actionType);
+
         break;
       case UserAction.ADD_COMMENT:
         this._commentsModel.addComment(data, actionType);
+
         break;
     }
   }
 
-  _commentModelEventHandler(id, actionType) {
+  _modelEventHandler(id, actionType) {
     switch (actionType) {
       case UserAction.DELETE_COMMENT:
-        this._filmChangeHandler(
+
+        this._updateFilmHandler(
           UserAction.UPDATE_FILM,
-          [UpdateType.FILM_PREVIEW, UpdateType.FILM_TOP_COMMENT],
+          [UpdateType.FILM, UpdateType.FILM_TOP_COMMENT],
           Object.assign(
             {},
             this._film,
@@ -119,14 +120,15 @@ export default class Comments {
             },
           ),
         );
+
         break;
       case UserAction.ADD_COMMENT: {
         const comments = this._film.comments.slice();
         comments.push(id);
 
-        this._filmChangeHandler(
+        this._updateFilmHandler(
           UserAction.UPDATE_FILM,
-          [UpdateType.FILM_PREVIEW],
+          [UpdateType.FILM],
           Object.assign(
             {},
             this._film,
@@ -135,6 +137,7 @@ export default class Comments {
             },
           ),
         );
+
         break;
       }
     }
