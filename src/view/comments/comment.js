@@ -39,14 +39,14 @@ export default class Comment extends AbstractView {
     return createCommentTemplate(this._comment);
   }
 
+  setDeleteHandler(callback) {
+    this.callback.delete = callback;
+    this.getElement().querySelector('.film-details__comment-delete').addEventListener('click', this._deleteHandler);
+  }
+
   _deleteHandler(evt) {
     evt.preventDefault();
 
     this.callback.delete(UserAction.DELETE_COMMENT, evt.target.dataset.id);
-  }
-
-  setDeleteHandler(callback) {
-    this.callback.delete = callback;
-    this.getElement().querySelector('.film-details__comment-delete').addEventListener('click', this._deleteHandler);
   }
 }

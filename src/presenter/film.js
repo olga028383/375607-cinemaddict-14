@@ -8,22 +8,21 @@ import FilmDetailsView from '../view/film-details/film-details.js';
 import CommentsPresenter from '../presenter/comments.js';
 
 import {render, replace, ContentPosition, remove} from '../utils/render.js';
-import {UserAction, UpdateType, FilterType, ENTER_CODE} from '../constants.js';
+import {UserAction, UpdateType, ENTER_CODE} from '../constants.js';
 import {isEscEvent} from '../util.js';
 
 export default class Film {
-  constructor(container, updateFilmHandler, isOpenModal, filterModel, filmModel, commentsModel) {
+  constructor(container, updateFilmHandler, replaceList, filterModel, filmModel, comments) {
     this._container = container;
     this._updateFilmHandler = updateFilmHandler;
-    this._isOpenModal = isOpenModal;
+    this._replaceList = replaceList;
     this._filterModel = filterModel;
     this._filmModel = filmModel;
-    this._commentsModel = commentsModel;
+    this._comments = comments;
     this._bodyElement = document.body;
 
     this._film = null;
     this._filmComponent = null;
-    this._renderTopCommentsLists = null;
 
     this._filmDetailContainerComponent = null;
     this._commentsPresenter = null;
@@ -61,14 +60,6 @@ export default class Film {
 
   destroy() {
     remove(this._filmComponent);
-  }
-
-  renderTopCommentsLists(callback) {
-    this._renderTopCommentsLists = callback;
-  }
-
-  renderList(callback) {
-    this._renderList = callback;
   }
 
   _initFilmComponent(film) {
@@ -118,13 +109,13 @@ export default class Film {
   }
 
   _initComments(container) {
-    this._commentsPresenter = new CommentsPresenter(container, this._updateFilmHandler, this._closeModalEscKeydownHandler, this._filmModel, this._commentsModel);
+    this._commentsPresenter = new CommentsPresenter(container, this._updateFilmHandler, this._closeModalEscKeydownHandler, this._filmModel, this._comments);
     this._commentsPresenter.init(this._film);
   }
 
   _openModal() {
     this._isDetailModal = true;
-    this._isOpenModal(() => this._isDetailModal);
+
 
     this._bodyElement.classList.add('hide-overflow');
     this._filmDetailContainerComponent = this._renderFilmDetail();
@@ -132,21 +123,23 @@ export default class Film {
   }
 
   _closeModal() {
+
     this._isDetailModal = false;
-    this._isOpenModal(() => this._isDetailModal);
+
 
     this._bodyElement.classList.remove('hide-overflow');
     remove(this._filmDetailContainerComponent);
 
-    if (this._renderTopCommentsLists) {
-      this._renderTopCommentsLists();
-    }
-
+    this._replaceList();
   }
 
-  //перерисовка списка только после закрытия окна
-  _getUpdateType(filterType) {
-    return (this._filterModel.get() !== filterType || this._filterModel.get() === FilterType.ALL) ? [UpdateType.FILM] : [UpdateType.FILM, UpdateType.FILM_LIST];
+  _setAction() {
+    const actions = [UpdateType.FILM];
+    if (!this._isDetailModal) {
+      actions.push(UpdateType.FILM_LIST);
+    }
+
+    return actions;
   }
 
   _setFilmComponentClickHandlers() {
@@ -157,9 +150,10 @@ export default class Film {
   }
 
   _watchListClickHandler() {
+
     this._updateFilmHandler(
       UserAction.UPDATE_FILM,
-      this._getUpdateType(FilterType.WATCHLIST),
+      this._setAction(),
       Object.assign(
         {},
         this._film,
@@ -168,12 +162,13 @@ export default class Film {
         },
       ),
     );
+
   }
 
   _watchClickHandler() {
     this._updateFilmHandler(
       UserAction.UPDATE_FILM,
-      this._getUpdateType(FilterType.HISTORY),
+      this._setAction(),
       Object.assign(
         {},
         this._film,
@@ -187,7 +182,7 @@ export default class Film {
   _favoriteClickHandler() {
     this._updateFilmHandler(
       UserAction.UPDATE_FILM,
-      this._getUpdateType(FilterType.FAVORITES),
+      this._setAction(),
       Object.assign(
         {},
         this._film,

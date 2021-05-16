@@ -19,11 +19,11 @@ const COUNT_FILM_LIST = 5;
 const COUNT_CARD_TOP = 2;
 
 export default class FilmList {
-  constructor(mainContainer, filterModel, filmsModel, commentsModel) {
+  constructor(mainContainer, filterModel, filmsModel, comments) {
     this._mainContainer = mainContainer;
     this._filmsModel = filmsModel;
     this._filterModel = filterModel;
-    this._commentsModel = commentsModel;
+    this._comments = comments;
 
     this._currentSortType = SortType.DEFAULT;
     this._sortComponent = null;
@@ -40,14 +40,12 @@ export default class FilmList {
     this._filmPresenterListTopRating = {};
     this._filmPresenterListTopComments = {};
 
-    this._isModal = false;
-
     this._viewActionHandler = this._viewActionHandler.bind(this);
     this._modelEventHandler = this._modelEventHandler.bind(this);
 
     this._setSortTypeChangeHandler = this._setSortTypeChangeHandler.bind(this);
 
-    this._isOpenModal = this._isOpenModal.bind(this);
+    this.replaceList = this.replaceList.bind(this);
   }
 
   init() {
@@ -62,8 +60,15 @@ export default class FilmList {
 
   }
 
+  replaceList() {
+    this._clearList();
+    this._filmListComponent = this._renderList(ContentPosition.AFTERBEGIN);
+
+    this._replaceTopCommentedComponent();
+  }
+
   _initFilm(film, container, presentersFilm) {
-    const filmPresenter = new FilmPresenter(container, this._viewActionHandler, this._isOpenModal, this._filterModel, this._filmsModel, this._commentsModel);
+    const filmPresenter = new FilmPresenter(container, this._viewActionHandler, this.replaceList, this._filterModel, this._filmsModel, this._comments);
     filmPresenter.init(film);
     presentersFilm[film.id] = filmPresenter;
   }
@@ -226,10 +231,6 @@ export default class FilmList {
       });
   }
 
-  _isOpenModal(data) {
-    this._isModal = data();
-  }
-
   _updateFilmListPresenter(updatedFilm, filmListPresenter) {
 
     if (filmListPresenter[updatedFilm.id]) {
@@ -266,36 +267,13 @@ export default class FilmList {
 
           break;
         case UpdateType.FILM_LIST:
-          console.log(this._isModal);
 
-          //здесь нельзя перерисовывать список пока окно открыто
-          //выше в методе _isOpenModal я получаю данные о том, открыто окно или нет, вот как совместить чтобы перерисовка происходила только по закрытию?
-          //и ниже странный код связан именно с этим багом, нельзя переисовывать списоки после действий на открытом окне
-
-
-          if (!this._isModal) {
-            if (this._filterModel.get() === data) {
-              this._clearList({resetRenderedFilmsCount: true, resetSortType: true});
-            } else {
-              this._clearList();
-            }
-
-            this._filmListComponent = this._renderList(ContentPosition.AFTERBEGIN);
+          if (this._filterModel.get() === data) {
+            this._clearList({resetRenderedFilmsCount: true, resetSortType: true});
+          } else {
+            this._clearList();
           }
-
-          break;
-        case UpdateType.FILM_TOP_COMMENT:
-          if (this._filmPresenterListTopComments[data.id]) {
-            this._filmPresenterListTopComments[data.id].renderTopCommentsLists(() => {
-              this._replaceTopCommentedComponent();
-            });
-          }
-
-          if (this._filmPresenterList[data.id]) {
-            this._filmPresenterList[data.id].renderTopCommentsLists(() => {
-              this._replaceTopCommentedComponent();
-            });
-          }
+          this._filmListComponent = this._renderList(ContentPosition.AFTERBEGIN);
 
           break;
       }

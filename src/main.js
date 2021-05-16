@@ -8,7 +8,6 @@ import FiltersPresenter from './presenter/filters.js';
 import FilmListPresenter from './presenter/film-list.js';
 
 import FilmsModel from './model/films.js';
-import CommentsModel from './model/comments.js';
 import FilterModel from './model/filter.js';
 
 import {render, ContentPosition} from './utils/render.js';
@@ -27,14 +26,11 @@ const films = new Array(COUNT_CARD_All).fill(null).map(() => generateFilm(commen
 const filmsModel = new FilmsModel();
 filmsModel.set(films);
 
-const commentsModel = new CommentsModel();
-commentsModel.set(comments);
-
 const filterModel = new FilterModel();
 
 render(headerElement, new RankUserView().getElement(), ContentPosition.BEFOREEND);
 
 new FiltersPresenter(mainElement, filterModel, filmsModel).init();
-new FilmListPresenter(mainElement, filterModel, filmsModel, commentsModel,).init();
+new FilmListPresenter(mainElement, filterModel, filmsModel, comments).init();
 
 render(footerElement, new StatisticsView(films.length.toLocaleString()).getElement(), ContentPosition.BEFOREEND);

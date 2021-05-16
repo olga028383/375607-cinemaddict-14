@@ -5,15 +5,18 @@ import CommentsFormView from '../view/comments/comments-form.js';
 import CommentsListView from '../view/comments/comments-list.js';
 import CommentView from '../view/comments/comment.js';
 
+import CommentsModel from '../model/comments.js';
+
 import {UserAction, UpdateType} from '../constants.js';
 
 export default class Comments {
-  constructor(container, updateFilmHandler, closeModalEscKeydownHandler, filmModel, commentsModel) {
+  constructor(container, updateFilmHandler, closeModalEscKeydownHandler, filmModel, comments) {
     this._container = container;
     this._updateFilmHandler = updateFilmHandler;
     this._closeModalEscKeydownHandler = closeModalEscKeydownHandler;
     this._filmModel = filmModel;
-    this._commentsModel = commentsModel;
+    this._comments = comments;
+    this._commentsModel = new CommentsModel();
 
     this._film = null;
     this._commentsContainerComponent = null;
@@ -27,12 +30,14 @@ export default class Comments {
 
     if (!this._film) {
       this._film = film;
+      this._initCommentsModel();
       this._renderComments();
+
       render(this._container.getElement(), this._commentsContainerComponent.getElement(), ContentPosition.BEFOREEND);
 
     } else {
 
-      this._replaceComponent();
+      this._replaceComponent(film);
     }
 
 
@@ -50,7 +55,17 @@ export default class Comments {
     }
   }
 
-  _replaceComponent() {
+  _initCommentsModel() {
+    const currentComments = [];
+
+    this._film.comments.forEach((filmCommentId) => {
+      currentComments.push(this._comments.find((comment) => filmCommentId === comment.id));
+    });
+
+    this._commentsModel.set(currentComments);
+  }
+
+  _replaceComponent(film) {
     const oldElement = this._commentsContainerComponent.getElement();
     this._film = film;
     this._renderComments();
@@ -69,11 +84,9 @@ export default class Comments {
   }
 
   _renderCommentsList(commentsListComponent) {
-    this._film.comments.forEach((filmCommentId) => {
-      const filmComment = this._commentsModel.get().find((comment) => filmCommentId === comment.id);
-      const commentComponent = new CommentView(filmComment);
-      commentComponent.setDeleteHandler(this._viewActionHandler());
-
+    this._commentsModel.get().forEach((comment) => {
+      const commentComponent = new CommentView(comment);
+      commentComponent.setDeleteHandler(this._viewActionHandler);
       render(commentsListComponent.getElement(), commentComponent.getElement(), ContentPosition.BEFOREEND);
     });
 
@@ -105,26 +118,29 @@ export default class Comments {
     }
   }
 
-  _modelEventHandler(id, actionType) {
+  _modelEventHandler(data, actionType) {
     switch (actionType) {
       case UserAction.DELETE_COMMENT:
 
         this._updateFilmHandler(
           UserAction.UPDATE_FILM,
-          [UpdateType.FILM, UpdateType.FILM_TOP_COMMENT],
+          [UpdateType.FILM],
           Object.assign(
             {},
             this._film,
             {
-              comments: this._film.comments.filter((comment) => comment !== id),
+              comments: this._film.comments.filter((comment) => comment !== data),
             },
           ),
         );
 
         break;
       case UserAction.ADD_COMMENT: {
+
+        this._comments.push(data);
+
         const comments = this._film.comments.slice();
-        comments.push(id);
+        comments.push(data.id);
 
         this._updateFilmHandler(
           UserAction.UPDATE_FILM,

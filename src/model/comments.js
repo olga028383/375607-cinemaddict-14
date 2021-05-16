@@ -18,15 +18,17 @@ export default class Comments extends Observer {
   addComment(data, action) {
     const id = getId();
 
-    this._comments.push({
+    const comment = {
       id: id,
       text: data.comment,
       emotion: data.emotion ? data.emotion : 'smile',
       author: 'test',
       data: new Date(),
-    });
+    };
 
-    this._notify(id, action);
+    this._comments.push(comment);
+
+    this._notify(comment, action);
   }
 
   deleteComment(id, action) {
