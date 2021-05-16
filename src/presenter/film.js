@@ -5,23 +5,29 @@ import FilmDetailsTopView from '../view/film-details/film-details-top.js';
 import FilmDetailsBottomView from '../view/film-details/film-details-bottom.js';
 import FilmDetailsView from '../view/film-details/film-details.js';
 
+import CommentsPresenter from '../presenter/comments.js';
+
 import {render, replace, ContentPosition, remove} from '../utils/render.js';
+import {UserAction, UpdateType, ENTER_CODE} from '../constants.js';
 import {isEscEvent} from '../util.js';
 
 export default class Film {
-  constructor(filmChangeHandler) {
-    this._film = null;
-    this._container = null;
-    this._filmComponent = null;
-    this._filmDetailsComponent = null;
-
-    this._filmChangeHandler = filmChangeHandler;
-    this._filmDetailContainerComponent = new FilmDetailsContainerView();
-    this._filmDetailFormWrapperComponent = new FilmDetailsFormWrapperView();
-    this._filmDetailTopComponent = new FilmDetailsTopView();
-    this._filmDetailBottomComponent = new FilmDetailsBottomView();
-
+  constructor(container, updateFilmHandler, replaceList, filterModel, filmModel, comments) {
+    this._container = container;
+    this._updateFilmHandler = updateFilmHandler;
+    this._replaceList = replaceList;
+    this._filterModel = filterModel;
+    this._filmModel = filmModel;
+    this._comments = comments;
     this._bodyElement = document.body;
+
+    this._film = null;
+    this._filmComponent = null;
+
+    this._filmDetailContainerComponent = null;
+    this._commentsPresenter = null;
+
+    this._isDetailModal = false;
 
     this._openModalHandler = this._openModalHandler.bind(this);
     this._closeModalHandler = this._closeModalHandler.bind(this);
@@ -30,106 +36,124 @@ export default class Film {
     this._watchListClickHandler = this._watchListClickHandler.bind(this);
     this._watchClickHandler = this._watchClickHandler.bind(this);
     this._favoriteClickHandler = this._favoriteClickHandler.bind(this);
-    this._submitFormHandler = this._submitFormHandler.bind(this);
+
+    this._submitFormCommentsHandler = this._submitFormCommentsHandler.bind(this);
   }
 
-  init(film, container) {
+  init(film) {
 
     if (!this._film) {
-      this._film = film;
-      this._container = container;
-      this._filmComponent = new FilmView(this._film);
-      this._filmDetailsComponent = new FilmDetailsView(this._film);
-      render(this._container.getElement(), this._filmComponent.getElement(), ContentPosition.BEFOREEND);
+      this._initFilmComponent(film);
 
+      render(this._container.getElement(), this._filmComponent.getElement(), ContentPosition.BEFOREEND);
     } else {
 
-      const oldElement = this._filmComponent.getElement();
-      const oldElementDetail = this._filmDetailsComponent.getElement();
+      this._replaceFilmElement(film);
 
-      this._film = film;
-      this._filmComponent = new FilmView(this._film);
-      this._filmDetailsComponent = new FilmDetailsView(this._film);
-
-      replace(this._filmComponent.getElement(), oldElement);
-      replace(this._filmDetailsComponent.getElement(), oldElementDetail);
+      if (this._filmDetailContainerComponent) {
+        this._replaceFilmDetailElement();
+      }
     }
 
-    this._renderFilm();
     return this._filmComponent.getElement();
-  }
-
-  getId() {
-    return this._film.id;
-  }
-
-  getComments() {
-    return this._film.comments;
-  }
-
-  getCloseModalEscKeydownHandler() {
-    return this._closeModalEscKeydownHandler;
-  }
-
-  getCommentsContainer() {
-    return this._filmDetailBottomComponent;
   }
 
   destroy() {
     remove(this._filmComponent);
   }
 
-  _renderFilm() {
-    this._renderFilmDetail();
-    this._filmComponent.setOpenModalClickHandler(this._openModalHandler);
+  _initFilmComponent(film) {
+    this._film = film;
+    this._filmComponent = new FilmView(this._film);
 
-    this._filmComponent.setWatchListClickHandler(this._watchListClickHandler);
-    this._filmComponent.setWatchClickHandler(this._watchClickHandler);
-    this._filmComponent.setFavoriteClickHandler(this._favoriteClickHandler);
+    this._setFilmComponentClickHandlers();
+  }
 
-    this._filmDetailsComponent.setWatchListClickHandler(this._watchListClickHandler);
-    this._filmDetailsComponent.setWatchClickHandler(this._watchClickHandler);
-    this._filmDetailsComponent.setFavoriteClickHandler(this._favoriteClickHandler);
+  _replaceFilmElement(film) {
+    const oldElement = this._filmComponent.getElement();
+    this._initFilmComponent(film);
+
+    replace(this._filmComponent.getElement(), oldElement);
   }
 
   _renderFilmDetail() {
-    render(this._filmDetailContainerComponent.getElement(), this._filmDetailFormWrapperComponent.getElement(), ContentPosition.BEFOREEND);
-    render(this._filmDetailFormWrapperComponent.getElement(), this._filmDetailTopComponent.getElement(), ContentPosition.BEFOREEND);
-    render(this._filmDetailTopComponent.getElement(), this._filmDetailsComponent.getElement(), ContentPosition.BEFOREEND);
-    render(this._filmDetailFormWrapperComponent.getElement(), this._filmDetailBottomComponent.getElement(), ContentPosition.BEFOREEND);
+    const detailsComponent = new FilmDetailsView(this._film);
+    const filmDetailContainerComponent = new FilmDetailsContainerView();
+    const filmDetailFormWrapperComponent = new FilmDetailsFormWrapperView();
+    const filmDetailTopComponent = new FilmDetailsTopView();
+    const filmDetailBottomComponent = new FilmDetailsBottomView();
+
+    render(filmDetailContainerComponent.getElement(), filmDetailFormWrapperComponent.getElement(), ContentPosition.BEFOREEND);
+    render(filmDetailFormWrapperComponent.getElement(), filmDetailTopComponent.getElement(), ContentPosition.BEFOREEND);
+    render(filmDetailTopComponent.getElement(), detailsComponent.getElement(), ContentPosition.BEFOREEND);
+    render(filmDetailFormWrapperComponent.getElement(), filmDetailBottomComponent.getElement(), ContentPosition.BEFOREEND);
+
+    this._initComments(filmDetailBottomComponent);
+
+    detailsComponent.setWatchListClickHandler(this._watchListClickHandler);
+    detailsComponent.setWatchClickHandler(this._watchClickHandler);
+    detailsComponent.setFavoriteClickHandler(this._favoriteClickHandler);
+
+    filmDetailTopComponent.setClickHandler(this._closeModalHandler);
+
+    return filmDetailContainerComponent;
+  }
+
+  _replaceFilmDetailElement() {
+    const oldElementDetail = this._filmDetailContainerComponent.getElement();
+    const scrollPosition = oldElementDetail.scrollTop;
+
+    this._filmDetailContainerComponent = this._renderFilmDetail();
+    replace(this._filmDetailContainerComponent, oldElementDetail);
+    this._filmDetailContainerComponent.getElement().scrollTop = scrollPosition;
+  }
+
+  _initComments(container) {
+    this._commentsPresenter = new CommentsPresenter(container, this._updateFilmHandler, this._closeModalEscKeydownHandler, this._filmModel, this._comments);
+    this._commentsPresenter.init(this._film);
   }
 
   _openModal() {
+    this._isDetailModal = true;
+
+
     this._bodyElement.classList.add('hide-overflow');
+    this._filmDetailContainerComponent = this._renderFilmDetail();
     render(this._bodyElement, this._filmDetailContainerComponent.getElement(), ContentPosition.BEFOREEND);
   }
 
   _closeModal() {
+
+    this._isDetailModal = false;
+
+
     this._bodyElement.classList.remove('hide-overflow');
-    this._filmDetailContainerComponent.getElement().remove();
-    document.removeEventListener('keydown', this._closeModalEscKeydownHandler);
+    remove(this._filmDetailContainerComponent);
+
+    this._replaceList();
   }
 
-  _closeModalEscKeydownHandler(evt) {
-    if (isEscEvent(evt)) {
-      evt.preventDefault();
-      this._closeModal();
+  _setAction() {
+    const actions = [UpdateType.FILM];
+    if (!this._isDetailModal) {
+      actions.push(UpdateType.FILM_LIST);
     }
+
+    return actions;
   }
 
-  _closeModalHandler() {
-    this._closeModal();
-  }
-
-  _openModalHandler() {
-    this._openModal();
-    this._filmDetailTopComponent.setClickHandler(this._closeModalHandler);
-
-    document.addEventListener('keydown', this._closeModalEscKeydownHandler);
+  _setFilmComponentClickHandlers() {
+    this._filmComponent.setOpenModalClickHandler(this._openModalHandler);
+    this._filmComponent.setWatchListClickHandler(this._watchListClickHandler);
+    this._filmComponent.setWatchClickHandler(this._watchClickHandler);
+    this._filmComponent.setFavoriteClickHandler(this._favoriteClickHandler);
   }
 
   _watchListClickHandler() {
-    this._filmChangeHandler(
+
+    this._updateFilmHandler(
+      UserAction.UPDATE_FILM,
+      this._setAction(),
       Object.assign(
         {},
         this._film,
@@ -138,10 +162,13 @@ export default class Film {
         },
       ),
     );
+
   }
 
   _watchClickHandler() {
-    this._filmChangeHandler(
+    this._updateFilmHandler(
+      UserAction.UPDATE_FILM,
+      this._setAction(),
       Object.assign(
         {},
         this._film,
@@ -153,7 +180,9 @@ export default class Film {
   }
 
   _favoriteClickHandler() {
-    this._filmChangeHandler(
+    this._updateFilmHandler(
+      UserAction.UPDATE_FILM,
+      this._setAction(),
       Object.assign(
         {},
         this._film,
@@ -164,7 +193,30 @@ export default class Film {
     );
   }
 
-  _submitFormHandler(){
-    //сюда придут данные и их нужно будет отправить
+  _submitFormCommentsHandler(evt) {
+    if (evt.ctrlKey && evt.keyCode === ENTER_CODE) {
+      this._commentsPresenter.submitForm();
+    }
+  }
+
+  _closeModalEscKeydownHandler(evt) {
+    if (isEscEvent(evt)) {
+      evt.preventDefault();
+      this._closeModal();
+    }
+  }
+
+  _closeModalHandler() {
+    this._closeModal();
+
+    document.removeEventListener('keydown', this._closeModalEscKeydownHandler);
+    document.removeEventListener('keydown', this._submitFormCommentsHandler);
+  }
+
+  _openModalHandler() {
+    this._openModal();
+
+    document.addEventListener('keydown', this._closeModalEscKeydownHandler);
+    document.addEventListener('keydown', this._submitFormCommentsHandler);
   }
 }

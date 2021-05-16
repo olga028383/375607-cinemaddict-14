@@ -70,14 +70,24 @@ const NumbersGenerationData = {
 };
 
 const getRandomBoolean = () => Boolean(getRandom(0, 1));
+const commentsExcluded = {};
+
+const getRandomComment = (comments) => {
+  let rand = getRandom(0, comments.length - 1);
+  commentsExcluded[rand] = true;
+
+  while (commentsExcluded[rand]) {
+    rand = getRandom(0, comments.length - 1);
+  }
+  return comments[rand].id;
+};
+
+const getRandomComments = (comments) => {
+  const rand = getRandom(0, 10);
+  return new Array(rand).fill(null).map(() => getRandomComment(comments));
+};
 
 const generateFilm = (comments) => {
-
-  const getRandomComments = () => {
-    const rand = getRandom(0, comments.length - 1);
-    return comments.slice(0, rand).map((comment) => comment.id);
-  };
-
   return {
     id: getId(),
     name: getRandomKeyFromArray(NAMES),
@@ -96,7 +106,7 @@ const generateFilm = (comments) => {
     isWatchList: getRandomBoolean(),
     isWatch: getRandomBoolean(),
     isFavorite: getRandomBoolean(),
-    comments: Array.from(new Set(new Array(getRandom(0, comments.length)).fill(null).map(() => getRandomComments()))),
+    comments: getRandomComments(comments),
   };
 };
 
