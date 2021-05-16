@@ -30,6 +30,11 @@ const UpdateType = {
   FILM_LIST: 'FILM_LIST',
 };
 
-const ENTER_CODE = 17;
+const ENTER_CODE = 13;
 
-export {EMOTIONS, SortType, FilterType, UserAction, UpdateType, ENTER_CODE};
+const Window = {
+  LIST: 'LIST',
+  STATS: 'STATS',
+};
+
+export {EMOTIONS, SortType, FilterType, UserAction, UpdateType, ENTER_CODE, Window};
