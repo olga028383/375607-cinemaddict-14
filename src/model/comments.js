@@ -15,7 +15,7 @@ export default class Comments extends Observer {
     this._comments = comments.slice();
   }
 
-  addComment(data, action) {
+  add(data, action) {
     const id = getId();
 
     const comment = {
@@ -31,7 +31,7 @@ export default class Comments extends Observer {
     this._notify(comment, action);
   }
 
-  deleteComment(id, action) {
+  delete(id, action) {
     const index = this._comments.findIndex((comment) => comment.id === id);
 
     if (index === -1) {

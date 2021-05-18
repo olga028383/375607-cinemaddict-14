@@ -1,5 +1,5 @@
-import AbstractView from './abstract-view.js';
-import {FilterType} from '../constants.js';
+import {FilterType} from '../../constants.js';
+import Smart from '../smart.js';
 
 const createFilterTemplate = (filter, isActive = false) => {
   const countFilms = (filter.type !== FilterType.ALL) ? `<span class="main-navigation__item-count">${filter.count}</span>` : '';
@@ -10,25 +10,27 @@ const createFilterListTemplate = (filters, activeFilter) => {
   return filters.map((filter) => createFilterTemplate(filter, filter.type === activeFilter)).join('');
 };
 
-const createMenuTemplate = (filters = {}, activeFilter) => {
-  return `<nav class="main-navigation">
-    <div class="main-navigation__items">
+const createFiltersTemplate = (data = {}) => {
+  const {filters = [], activeFilter} = data;
+  return `<div class="main-navigation__items">
       ${createFilterListTemplate(filters, activeFilter)}
-    </div>
-    <a href="#stats" class="main-navigation__additional">Stats</a>
-  </nav>`;
+    </div>`;
 };
 
-export default class Menu extends AbstractView {
+export default class Filters extends Smart {
   constructor(filters, activeFilter) {
     super();
-    this._filters = filters;
-    this._activeFilter = activeFilter;
+
+    this._data = {
+      filters: filters,
+      activeFilter: activeFilter,
+    };
+
     this._filterClickHandler = this._filterClickHandler.bind(this);
   }
 
   getTemplate() {
-    return createMenuTemplate(this._filters, this._activeFilter);
+    return createFiltersTemplate(this._data);
   }
 
   setFiltersClickHandler(callback) {
@@ -36,8 +38,23 @@ export default class Menu extends AbstractView {
     this.getElement().querySelectorAll('.main-navigation__item').forEach((item) => item.addEventListener('click', this._filterClickHandler));
   }
 
+  removeActiveClass() {
+
+    const activeItem = this.getElement().querySelector('.main-navigation__item--active');
+    if (activeItem) {
+      activeItem.classList.remove('main-navigation__item--active');
+    }
+
+  }
+
   _filterClickHandler(evt) {
     evt.preventDefault();
+
+    this.updateData({
+      activeFilter: evt.target.dataset.filter,
+    });
+
     this.callback.clickFilter(evt.target.dataset.filter);
+
   }
 }

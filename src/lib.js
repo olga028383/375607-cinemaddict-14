@@ -2,6 +2,8 @@ import * as dayjs from 'dayjs';
 import * as duration from 'dayjs/plugin/duration';
 import nanoid from 'nanoid';
 import he from 'he';
+import Chart from 'chart.js';
+import ChartDataLabels from 'chartjs-plugin-datalabels';
 
 dayjs.extend(duration);
 
@@ -19,4 +21,19 @@ const sortDate = (dateA, dateB) => {
 
 const escapeText = (text) => he.escape(text);
 
-export {getYear, getDateFormat, getId, sortDate, getTime, escapeText};
+const getRandomDate = (count, period) => dayjs().subtract(count, period);
+
+const checkIncludeDataInPeriod = (date, period) => dayjs().diff(dayjs(date), period) < 1;
+
+export {
+  getYear,
+  getDateFormat,
+  getId,
+  sortDate,
+  getTime,
+  escapeText,
+  Chart,
+  ChartDataLabels,
+  getRandomDate,
+  checkIncludeDataInPeriod
+};

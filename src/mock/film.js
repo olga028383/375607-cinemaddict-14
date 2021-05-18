@@ -1,5 +1,5 @@
 import {getRandom, generateArrayData, getRandomKeyFromArray} from '../util.js';
-import {getId} from '../lib.js';
+import {getId, getRandomDate} from '../lib.js';
 
 const NAMES = [
   'The Dance of Life',
@@ -62,6 +62,8 @@ const NumbersGenerationData = {
   YEAR_MIN: 1930,
   YEAR_MAX: 2020,
   MONTH_MAX: 13,
+  DAYS: 400,
+  DAY_HOUR: 30,
   RATING_MAX: 10,
   TIME_MIN: 60,
   TIME_MAX: 120,
@@ -104,6 +106,7 @@ const generateFilm = (comments) => {
     actors: Array.from(new Set(generateArrayData(NumbersGenerationData.ACTORS_MIN, PRODUCER))),
     genres: Array.from(new Set(generateArrayData(1, GENRES))),
     isWatchList: getRandomBoolean(),
+    watchingDate: getRandomDate(getRandom(1, NumbersGenerationData.DAYS), 'day'),
     isWatch: getRandomBoolean(),
     isFavorite: getRandomBoolean(),
     comments: getRandomComments(comments),

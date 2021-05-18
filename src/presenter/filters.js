@@ -1,5 +1,6 @@
-import MenuView from '../view/menu.js';
-import {render, ContentPosition, replace, remove} from '../utils/render.js';
+import FiltersView from '../view/menu/filters.js';
+
+import {render, ContentPosition} from '../utils/render.js';
 import {filter} from '../utils/filters.js';
 import {FilterType, UpdateType} from '../constants.js';
 
@@ -8,7 +9,12 @@ export default class Filters {
     this._container = container;
     this._filterModel = filterModel;
     this._filmsModel = filmsModel;
-    this._menuComponent = null;
+
+    this._replaceWindow = null;
+    this._filmListWindow = false;
+
+    this._filterComponents = null;
+    this._filters = null;
 
     this._modelEventHandler = this._modelEventHandler.bind(this);
     this._setFiltersClickHandler = this._setFiltersClickHandler.bind(this);
@@ -18,17 +24,33 @@ export default class Filters {
   }
 
   init() {
-    const prevFilterComponent = this._menuComponent;
-    this._menuComponent = new MenuView(this._getFilters(), this._filterModel.get());
-    this._menuComponent.setFiltersClickHandler(this._setFiltersClickHandler);
 
-    if (prevFilterComponent === null) {
-      render(this._container, this._menuComponent.getElement(), ContentPosition.AFTERBEGIN);
-      return;
+    if (!this._filters) {
+      this._filters = this._getFilters();
+      this._filterComponents = new FiltersView(this._filters, this._filterModel.get());
+    } else {
+      this._updateFilter();
     }
 
-    replace(this._menuComponent, prevFilterComponent);
-    remove(prevFilterComponent);
+    this._filterComponents.setFiltersClickHandler(this._setFiltersClickHandler);
+    render(this._container, this._filterComponents.getElement(), ContentPosition.AFTERBEGIN);
+  }
+
+  removeActiveClass() {
+    this._filterComponents.removeActiveClass();
+  }
+
+  replaceWindow(callback) {
+    this._filmListWindow = false;
+    this._replaceWindow = callback;
+  }
+
+  _updateFilter() {
+    this._filters = this._getFilters();
+    this._filterComponents.updateData({
+      filters: this._filters,
+      activeFilter: this._filterModel.get(),
+    });
   }
 
   _modelEventHandler() {
@@ -61,10 +83,16 @@ export default class Filters {
   }
 
   _setFiltersClickHandler(filterType) {
+    if (!this._filmListWindow && this._replaceWindow) {
+      this._replaceWindow();
+      this._filmListWindow = true;
+    }
+
     if (this._filterModel.get() === filterType) {
       return;
     }
 
     this._filterModel.set([UpdateType.FILM_LIST], filterType);
   }
+
 }

@@ -25,4 +25,12 @@ export default class AbstractView {
   removeElement() {
     this._element = null;
   }
+
+  show() {
+
+  }
+
+  hide(){
+
+  }
 }

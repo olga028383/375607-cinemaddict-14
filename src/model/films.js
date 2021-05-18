@@ -30,4 +30,16 @@ export default class Films extends Observer {
 
     this._notify(updateType, update);
   }
+
+  sortRating() {
+    return this._films.slice().sort((a, b) => {
+      return b.rating - a.rating;
+    });
+  }
+
+  sortComment() {
+    return this._films.slice().sort((a, b) => {
+      return b.comments.length - a.comments.length;
+    });
+  }
 }
