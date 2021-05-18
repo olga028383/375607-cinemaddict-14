@@ -108,11 +108,11 @@ export default class Comments {
   _viewActionHandler(actionType, data) {
     switch (actionType) {
       case UserAction.DELETE_COMMENT:
-        this._commentsModel.deleteComment(data, actionType);
+        this._commentsModel.delete(data, actionType);
 
         break;
       case UserAction.ADD_COMMENT:
-        this._commentsModel.addComment(data, actionType);
+        this._commentsModel.add(data, actionType);
 
         break;
     }

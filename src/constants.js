@@ -32,9 +32,26 @@ const UpdateType = {
 
 const ENTER_CODE = 13;
 
-const Window = {
-  LIST: 'LIST',
-  STATS: 'STATS',
+const PeriodValues = {
+  'ALL': 'all-time',
+  'TODAY': 'day',
+  'WEEK': 'week',
+  'MONTH': 'month',
+  'YEAR': 'year',
 };
 
-export {EMOTIONS, SortType, FilterType, UserAction, UpdateType, ENTER_CODE, Window};
+const PeriodNames = {
+  'ALL': 'All time',
+  'TODAY': 'Today',
+  'WEEK': 'Week',
+  'MONTH': 'Month',
+  'YEAR': 'Year',
+};
+
+const RankNames = {
+  'MOVIE_BUFF': 'Movie buff',
+  'NOVICE': 'Novice',
+  'FAN': 'Fan',
+};
+
+export {EMOTIONS, SortType, FilterType, UserAction, UpdateType, ENTER_CODE, PeriodValues, PeriodNames, RankNames};
