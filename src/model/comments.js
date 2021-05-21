@@ -11,8 +11,10 @@ export default class Comments extends Observer {
     return this._comments;
   }
 
-  set(comments) {
+  set(updateType, comments) {
     this._comments = comments.slice();
+
+    this._notify(updateType);
   }
 
   add(data, action) {
@@ -28,7 +30,7 @@ export default class Comments extends Observer {
 
     this._comments.push(comment);
 
-    this._notify(comment, action);
+    this._notify(action, comment);
   }
 
   delete(id, action) {
@@ -43,6 +45,35 @@ export default class Comments extends Observer {
       ...this._comments.slice(index + 1),
     ];
 
-    this._notify(id, action);
+    this._notify(action, id);
   }
+
+  static adaptToClient(comment) {
+    const adaptedComment = Object.assign(
+      {},
+      comment,
+      {
+        text: comment.comment,
+      },
+    );
+
+    delete adaptedComment.comment;
+
+    return adaptedComment;
+  }
+
+  static adaptToServer(comment) {
+    const adaptedComment = Object.assign(
+      {},
+      comment,
+      {
+        'comment': comment.text,
+      },
+    );
+
+    delete adaptedComment.text;
+
+    return adaptedComment;
+  }
+
 }

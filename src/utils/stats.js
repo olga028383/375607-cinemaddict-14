@@ -5,12 +5,12 @@ const makeItemsUnique = (items) => [...new Set(items)];
 const countFilmsByWatched = (films, watch) => films.filter((film) => film.genres.find((genre) => genre === watch)).length;
 
 const countTimeLengthWatch = (films) => {
-  return films.reduce((previousValue, currentValue) => {
-    return +previousValue + currentValue.runTime;
+  return films.reduce((accumulator, currentValue) => {
+    return accumulator + currentValue.runTime;
   }, 0);
 };
 
-const getRankUser = (films) =>{
+const getRankUser = (films) => {
 
   const filmsLength = films.length;
 
@@ -25,4 +25,20 @@ const getRankUser = (films) =>{
   return 0;
 };
 
-export {makeItemsUnique, countFilmsByWatched, countTimeLengthWatch, getRankUser};
+const getLengthTimeFormat = (numeric) => {
+  const minTime = 60;
+  const minutes = numeric % minTime;
+  const hours = (numeric - minutes) / minTime;
+
+  let result = 0;
+  if (hours > 0) {
+    result = `${hours}<span class="statistic__item-description">h</span>`;
+  }
+  if (minutes > 0) {
+    result += (minutes <= 9) ? ` 0${minutes}<span class="statistic__item-description">m</span>` : ` ${minutes}<span class="statistic__item-description">m</span>`;
+  }
+
+  return result.trim();
+};
+
+export {makeItemsUnique, countFilmsByWatched, countTimeLengthWatch, getRankUser, getLengthTimeFormat};

@@ -1,28 +1,27 @@
 import Smart from './smart.js';
-import {Chart, ChartDataLabels, getTime, checkIncludeDataInPeriod} from '../lib.js';
-import {makeItemsUnique, countFilmsByWatched, countTimeLengthWatch, getRankUser} from '../utils/stats.js';
+import {Chart, ChartDataLabels, checkIncludeDataInPeriod} from '../lib.js';
 
-import {PeriodValues, PeriodNames} from '../constants.js';
+import {
+  makeItemsUnique,
+  countFilmsByWatched,
+  countTimeLengthWatch,
+  getRankUser,
+  getLengthTimeFormat
+} from '../utils/stats.js';
 
-const getFilmGenres = (films) => {
-  let filmGenres = [];
+import {PeriodValues, PeriodNames, BAR_HEIGHT} from '../constants.js';
 
-  films.forEach((film) => {
-    filmGenres = filmGenres.concat(film.genres);
-  });
-
-  return filmGenres;
-};
+const getFilmGenres = (films) => films.reduce((accumulator, film) => {
+  return accumulator.concat(film.genres);
+}, []);
 
 const renderChart = (films, element) => {
   const uniqueGenres = makeItemsUnique(getFilmGenres(films));
   const uniqueGenresCount = uniqueGenres.map((genre) => countFilmsByWatched(films, genre));
-  const BAR_HEIGHT = 50;
-  const statisticElement = element;
 
-  statisticElement.height = BAR_HEIGHT * uniqueGenres.length;
+  element.height = BAR_HEIGHT * uniqueGenres.length;
 
-  new Chart(statisticElement, {
+  new Chart(element, {
     plugins: [ChartDataLabels],
     type: 'horizontalBar',
     data: {
@@ -90,18 +89,15 @@ const createPeriods = (activeFilter) => {
 
 const createFilmLength = (films) => films.length > 0 ? `${films.length} <span class="statistic__item-description">movies</span>` : 0;
 
-const createTimeLength = (films) => films.length > 0 ? `${getTime(countTimeLengthWatch(films), 'H[<span class="statistic__item-description">h</span>] mm[<span class="statistic__item-description">m</span>]')}` : 0;
-
 const createFilmGenres = (films) => {
   if (films.length === 0) {
     return '';
   }
-  const uniqueGenres = makeItemsUnique(getFilmGenres(films));
 
-  const dataGenres = {};
-  uniqueGenres.forEach((genre) => {
-    dataGenres[genre] = countFilmsByWatched(films, genre);
-  });
+  const dataGenres = getFilmGenres(films).reduce((accumulator, genre) => {
+    accumulator[genre] = (accumulator[genre] || 0) + 1;
+    return accumulator;
+  }, {});
 
   const dataGenresSort = Object.entries(dataGenres).slice().sort((a, b) => b[1] - a[1]);
 
@@ -137,10 +133,9 @@ const createStatsTemplate = (data) => {
       </li>
       <li class="statistic__text-item">
         <h4 class="statistic__item-title">Total duration</h4>
-        <p class="statistic__item-text">${createTimeLength(films)}</p>
+        <p class="statistic__item-text">${getLengthTimeFormat(countTimeLengthWatch(films))}</p>
       </li>
       ${createFilmGenres(films)}
-      
     </ul>
 
     <div class="statistic__chart-wrap">

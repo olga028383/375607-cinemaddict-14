@@ -12,13 +12,12 @@ import {UserAction, UpdateType, ENTER_CODE} from '../constants.js';
 import {isEscEvent} from '../util.js';
 
 export default class Film {
-  constructor(container, updateFilmHandler, replaceList, filterModel, filmModel, comments) {
+  constructor(container, updateFilmHandler, replaceList, filterModel, filmModel) {
     this._container = container;
     this._updateFilmHandler = updateFilmHandler;
     this._replaceList = replaceList;
     this._filterModel = filterModel;
     this._filmModel = filmModel;
-    this._comments = comments;
     this._bodyElement = document.body;
 
     this._film = null;
@@ -109,13 +108,12 @@ export default class Film {
   }
 
   _initComments(container) {
-    this._commentsPresenter = new CommentsPresenter(container, this._updateFilmHandler, this._closeModalEscKeydownHandler, this._filmModel, this._comments);
+    this._commentsPresenter = new CommentsPresenter(container, this._updateFilmHandler, this._closeModalEscKeydownHandler, this._filmModel);
     this._commentsPresenter.init(this._film);
   }
 
   _openModal() {
     this._isDetailModal = true;
-
 
     this._bodyElement.classList.add('hide-overflow');
     this._filmDetailContainerComponent = this._renderFilmDetail();
@@ -125,8 +123,6 @@ export default class Film {
   _closeModal() {
 
     this._isDetailModal = false;
-
-
     this._bodyElement.classList.remove('hide-overflow');
     remove(this._filmDetailContainerComponent);
 
@@ -150,7 +146,6 @@ export default class Film {
   }
 
   _watchListClickHandler() {
-
     this._updateFilmHandler(
       UserAction.UPDATE_FILM,
       this._setAction(),
