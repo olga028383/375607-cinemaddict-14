@@ -12,18 +12,18 @@ import {UserAction, UpdateType} from '../constants.js';
 import {getConnect} from '../utils/api.js';
 
 export default class Comments {
-  constructor(container, updateFilmHandler, closeModalEscKeydownHandler, filmModel, comments) {
+  constructor(container, updateFilmHandler, closeModalEscKeydownHandler, filmModel) {
     this._container = container;
     this._updateFilmHandler = updateFilmHandler;
     this._closeModalEscKeydownHandler = closeModalEscKeydownHandler;
     this._filmModel = filmModel;
-    this._comments = comments;
     this._commentsModel = new CommentsModel();
 
     this._film = null;
     this._commentsContainerComponent = null;
     this._commentsFormComponent = null;
     this._commentsListComponent = null;
+    this._commentPresenterList = {};
 
     this._viewActionHandler = this._viewActionHandler.bind(this);
     this._modelEventHandler = this._modelEventHandler.bind(this);
@@ -53,10 +53,8 @@ export default class Comments {
     const comment = this._commentsFormComponent.getDescriptionValue();
     const emotion = this._commentsFormComponent.getEmotionValue();
 
-    if (comment) {
-      const data = {comment: comment, emotion: emotion};
-      this._viewActionHandler(UserAction.ADD_COMMENT, data);
-    }
+    const data = {comment: comment, emotion: emotion, movie: this._film.id};
+    this._viewActionHandler(UserAction.ADD_COMMENT, data);
   }
 
   _initCommentsModel() {
@@ -89,9 +87,9 @@ export default class Comments {
 
   _renderCommentsList() {
     this._commentsModel.get().forEach((comment) => {
-      const commentComponent = new CommentView(comment);
-      commentComponent.setDeleteHandler(this._viewActionHandler);
-      render(this._commentsListComponent.getElement(), commentComponent.getElement(), ContentPosition.BEFOREEND);
+      this._commentPresenterList[comment.id] = new CommentView(comment);
+      this._commentPresenterList[comment.id].setDeleteHandler(this._viewActionHandler);
+      render(this._commentsListComponent.getElement(), this._commentPresenterList[comment.id].getElement(), ContentPosition.BEFOREEND);
     });
   }
 
@@ -110,11 +108,25 @@ export default class Comments {
   _viewActionHandler(actionType, data) {
     switch (actionType) {
       case UserAction.DELETE_COMMENT:
-        this._commentsModel.delete(data, actionType);
+        getConnect().deleteComment(data.id).then(() => {
+          this._commentsModel.delete(data.id, actionType);
+        }).catch(() => {
+          this._commentPresenterList[data.id].shake(() => {
+            this._commentPresenterList[data.id].updateData({
+              isDeleting: false,
+              isDisabled: false
+            });
+            this._commentPresenterList[data.id].setDeleteHandler(this._viewActionHandler);
+          });
+        });
 
         break;
       case UserAction.ADD_COMMENT:
-        this._commentsModel.add(data, actionType);
+        getConnect().addComment(data).then((response) => {
+          this._commentsModel.add(response, actionType);
+        }).catch((response) => {
+          this._commentsFormComponent.shake(() => console.log('разблокировать форму'));
+        });
 
         break;
     }
@@ -123,36 +135,10 @@ export default class Comments {
   _modelEventHandler(actionType, data) {
     switch (actionType) {
       case UserAction.DELETE_COMMENT:
-
-        this._updateFilmHandler(
-          UserAction.UPDATE_FILM,
-          [UpdateType.FILM],
-          Object.assign(
-            {},
-            this._film,
-            {
-              comments: this._film.comments.filter((comment) => comment !== data),
-            },
-          ),
-        );
-
+        //Здесь не нужно перерисовывать фильм, просто вызвать метод перерисовки
         break;
       case UserAction.ADD_COMMENT: {
-
-        const comments = this._film.comments.slice();
-        comments.push(data.id);
-
-        this._updateFilmHandler(
-          UserAction.UPDATE_FILM,
-          [UpdateType.FILM],
-          Object.assign(
-            {},
-            this._film,
-            {
-              comments: comments,
-            },
-          ),
-        );
+        //Здесь не нужно перерисовывать фильм, просто вызвать метод перерисовки
 
         break;
       }
