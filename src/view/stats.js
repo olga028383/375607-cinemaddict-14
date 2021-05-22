@@ -2,22 +2,18 @@ import Smart from './smart.js';
 import {Chart, ChartDataLabels, checkIncludeDataInPeriod} from '../lib.js';
 
 import {
-  makeItemsUnique,
-  countFilmsByWatched,
   countTimeLengthWatch,
   getRankUser,
-  getLengthTimeFormat
+  getLengthTimeFormat,
+  getGenresBySort,
 } from '../utils/stats.js';
 
 import {PeriodValues, PeriodNames, BAR_HEIGHT} from '../constants.js';
 
-const getFilmGenres = (films) => films.reduce((accumulator, film) => {
-  return accumulator.concat(film.genres);
-}, []);
-
 const renderChart = (films, element) => {
-  const uniqueGenres = makeItemsUnique(getFilmGenres(films));
-  const uniqueGenresCount = uniqueGenres.map((genre) => countFilmsByWatched(films, genre));
+  const genresBySort = getGenresBySort(films);
+  const uniqueGenres = genresBySort.map((film) => film[0]);
+  const uniqueGenresCount = genresBySort.map((film) => film[1]);
 
   element.height = BAR_HEIGHT * uniqueGenres.length;
 
@@ -93,17 +89,9 @@ const createFilmGenres = (films) => {
   if (films.length === 0) {
     return '';
   }
-
-  const dataGenres = getFilmGenres(films).reduce((accumulator, genre) => {
-    accumulator[genre] = (accumulator[genre] || 0) + 1;
-    return accumulator;
-  }, {});
-
-  const dataGenresSort = Object.entries(dataGenres).slice().sort((a, b) => b[1] - a[1]);
-
   return `<li class="statistic__text-item">
         <h4 class="statistic__item-title">Top genre</h4>
-        <p class="statistic__item-text">${dataGenresSort[0][0]}</p>
+        <p class="statistic__item-text">${getGenresBySort(films)[0][0]}</p>
       </li>`;
 };
 
@@ -146,9 +134,9 @@ const createStatsTemplate = (data) => {
 };
 
 export default class Stats extends Smart {
-  constructor(films, activeFilter) {
+  constructor(watchedFilms, activeFilter) {
     super();
-    this._films = films;
+    this._films = watchedFilms;
 
     this._data = {
       rankName: getRankUser(this._films),

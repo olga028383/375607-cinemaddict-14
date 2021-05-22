@@ -1,8 +1,4 @@
-import {RankNames} from '../constants.js';
-
-const makeItemsUnique = (items) => [...new Set(items)];
-
-const countFilmsByWatched = (films, watch) => films.filter((film) => film.genres.find((genre) => genre === watch)).length;
+import {RankNames, MIN_TIME} from '../constants.js';
 
 const countTimeLengthWatch = (films) => {
   return films.reduce((accumulator, currentValue) => {
@@ -26,9 +22,8 @@ const getRankUser = (films) => {
 };
 
 const getLengthTimeFormat = (numeric) => {
-  const minTime = 60;
-  const minutes = numeric % minTime;
-  const hours = (numeric - minutes) / minTime;
+  const minutes = numeric % MIN_TIME;
+  const hours = (numeric - minutes) / MIN_TIME;
 
   let result = 0;
   if (hours > 0) {
@@ -41,4 +36,24 @@ const getLengthTimeFormat = (numeric) => {
   return result.trim();
 };
 
-export {makeItemsUnique, countFilmsByWatched, countTimeLengthWatch, getRankUser, getLengthTimeFormat};
+const getFilmGenres = (films) => films.reduce((accumulator, film) => {
+  return accumulator.concat(film.genres);
+}, []);
+
+
+const getGenresBySort = (films) => {
+  const dataGenres = getFilmGenres(films).reduce((accumulator, genre) => {
+    accumulator[genre] = (accumulator[genre] || 0) + 1;
+    return accumulator;
+  }, {});
+
+  return Object.entries(dataGenres).slice().sort((a, b) => b[1] - a[1]);
+};
+
+export {
+  countTimeLengthWatch,
+  getRankUser,
+  getLengthTimeFormat,
+  getGenresBySort,
+  getFilmGenres
+};

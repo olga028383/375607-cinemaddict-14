@@ -1,5 +1,4 @@
 import AbstractView from './abstract-view.js';
-import {getRankUser} from '../utils/stats.js';
 
 const createRankUserTemplate = (name) => {
   return name ? `<section class="header__profile profile">
@@ -9,11 +8,9 @@ const createRankUserTemplate = (name) => {
 };
 
 export default class RankUser extends AbstractView {
-  constructor(films) {
+  constructor(rankName) {
     super();
-
-    this._films = films;
-    this._rankName = getRankUser(films);
+    this._rankName = rankName;
   }
 
   getTemplate() {

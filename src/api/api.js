@@ -51,10 +51,6 @@ export default class Api {
       .catch(Api.catchError);
   }
 
-  static getConnect() {
-    return this;
-  }
-
   static checkStatus(response) {
     if (
       response.status < SuccessHTTPStatusRange.MIN ||

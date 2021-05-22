@@ -12,6 +12,7 @@ import FilterModel from './model/filter.js';
 
 import {PeriodValues, UpdateType} from './constants.js';
 import {render, ContentPosition, remove} from './utils/render.js';
+import {getRankUser} from './utils/stats.js';
 
 import {getConnect} from './utils/api.js';
 
@@ -26,7 +27,6 @@ const menuElement = new MenuView().getElement();
 const statsItemComponent = new StatsItemView();
 let statsViewComponent = null;
 
-render(headerElement, new RankUserView(filmsModel.get().slice().filter((film) => film.isWatch)).getElement(), ContentPosition.BEFOREEND);
 render(menuElement, statsItemComponent.getElement(), ContentPosition.BEFOREEND);
 render(mainElement, menuElement, ContentPosition.BEFOREEND);
 
@@ -53,6 +53,7 @@ statsItemComponent.setClickHandler(() => {
 getConnect().getFilms()
   .then((films) => {
     filmsModel.set([UpdateType.INIT], films);
+    render(headerElement, new RankUserView(getRankUser(filmsModel.get().slice().filter((film) => film.isWatch))).getElement(), ContentPosition.BEFOREEND);
   })
   .catch(() => {
     filmsModel.set([UpdateType.INIT], []);

@@ -26,6 +26,7 @@ export default class FilmList {
     this._filterModel = filterModel;
     this._isLoading = true;
     this._loadingComponent = new LoadingView();
+    this._statsFooterComponent = null;
 
     this._currentSortType = SortType.DEFAULT;
     this._sortComponent = null;
@@ -67,7 +68,9 @@ export default class FilmList {
 
     render(this._mainContainer, this._layoutFilmsComponent.getElement(), ContentPosition.BEFOREEND);
 
-    this._renderFooter();
+    if (!this._statsFooterComponent) {
+      this._renderFooter();
+    }
   }
 
   destroy() {
@@ -98,11 +101,11 @@ export default class FilmList {
   }
 
   _initTopRatingFilmsComponent() {
-    this._filmTopRatingComponent = this._initTopLists('Top rated', this._filmsModel.sortRating().slice(0, COUNT_CARD_TOP), this._filmPresenterListTopRating);
+    this._filmTopRatingComponent = this._initTopLists('Top rated', this._filmsModel.getSortedByRating().slice(0, COUNT_CARD_TOP), this._filmPresenterListTopRating);
   }
 
   _initTopCommentsFilmsComponent() {
-    const mostCommentedCard = this._filmsModel.sortComment().slice(0, COUNT_CARD_TOP);
+    const mostCommentedCard = this._filmsModel.getSortedByComment().slice(0, COUNT_CARD_TOP);
     this._filmTopCommentsComponent = this._initTopLists('Most commented', mostCommentedCard, this._filmPresenterListTopComments);
   }
 
@@ -236,7 +239,8 @@ export default class FilmList {
 
   _renderFooter() {
     const footerElement = document.querySelector('.footer');
-    render(footerElement, new StatsFooterView(this._filmsModel.get().length.toLocaleString()).getElement(), ContentPosition.BEFOREEND);
+    this._statsFooterComponent = new StatsFooterView(this._filmsModel.get().length.toLocaleString());
+    render(footerElement, this._statsFooterComponent.getElement(), ContentPosition.BEFOREEND);
   }
 
   _replaceTopCommentedComponent() {

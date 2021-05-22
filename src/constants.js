@@ -63,6 +63,8 @@ const COUNT_CARD_TOP = 2;
 
 const BAR_HEIGHT = 50;
 
+const MIN_TIME = 60;
+
 export {
   EMOTIONS,
   SortType,
@@ -76,5 +78,6 @@ export {
   MAX_LENGTH_DESCRIPTION,
   COUNT_FILM_LIST,
   COUNT_CARD_TOP,
-  BAR_HEIGHT
+  BAR_HEIGHT,
+  MIN_TIME
 };
