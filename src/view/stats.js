@@ -5,7 +5,7 @@ import {
   countTimeLengthWatch,
   getRankUser,
   getLengthTimeFormat,
-  getGenresBySort,
+  getGenresBySort
 } from '../utils/stats.js';
 
 import {PeriodValues, PeriodNames, BAR_HEIGHT} from '../constants.js';
