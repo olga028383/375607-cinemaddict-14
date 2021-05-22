@@ -18,19 +18,8 @@ export default class Comments extends Observer {
   }
 
   add(data, action) {
-    const id = getId();
-
-    const comment = {
-      id: id,
-      text: data.comment,
-      emotion: data.emotion ? data.emotion : 'smile',
-      author: 'test',
-      data: new Date(),
-    };
-
-    this._comments.push(comment);
-
-    this._notify(action, comment);
+    this._comments = data.comments.map(CommentsModel.adaptToClient);
+    this._notify(action);
   }
 
   delete(id, action) {
@@ -59,21 +48,10 @@ export default class Comments extends Observer {
 
     delete adaptedComment.comment;
 
-    return adaptedComment;
-  }
-
-  static adaptToServer(comment) {
-    const adaptedComment = Object.assign(
-      {},
-      comment,
-      {
-        'comment': comment.text,
-      },
-    );
-
-    delete adaptedComment.text;
+    if(comment.movie) {
+      delete adaptedComment.movie;
+    }
 
     return adaptedComment;
   }
-
 }
