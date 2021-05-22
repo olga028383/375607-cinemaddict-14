@@ -2,7 +2,6 @@ import {getYear, getTime} from '../../lib.js';
 import {clipText} from '../../util.js';
 import AbstractView from '../abstract-view.js';
 
-const MAX_LENGTH_DESCRIPTION = 140;
 
 const getActiveClassButton = (flag) => {
   return flag ? 'film-card__controls-item--active' : '';
@@ -30,10 +29,10 @@ const createCardTemplate = (film = {}) => {
           <p class="film-card__info">
             <span class="film-card__year">${getYear(date)}</span>
             <span class="film-card__duration">${getTime(runTime, 'H[h] mm[m]')}</span>
-            <span class="film-card__genre">${genres}</span>
+            <span class="film-card__genre">${genres.join(', ')}</span>
           </p>
-          <img src="./images/posters/${poster}" alt="" class="film-card__poster">
-          <p class="film-card__description">${clipText(description, MAX_LENGTH_DESCRIPTION)}</p>
+          <img src="${poster}" alt="" class="film-card__poster">
+          <p class="film-card__description">${clipText(description)}</p>
           <a class="film-card__comments">${comments.length} comments</a>
           <div class="film-card__controls">
             <button class="film-card__controls-item button film-card__controls-item--add-to-watchlist ${getActiveClassButton(isWatchList)}" type="button">Add to watchlist</button>

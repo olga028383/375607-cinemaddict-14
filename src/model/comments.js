@@ -11,11 +11,13 @@ export default class Comments extends Observer {
     return this._comments;
   }
 
-  set(comments) {
+  set(updateType, comments) {
     this._comments = comments.slice();
+
+    this._notify(updateType);
   }
 
-  addComment(data, action) {
+  add(data, action) {
     const id = getId();
 
     const comment = {
@@ -28,10 +30,10 @@ export default class Comments extends Observer {
 
     this._comments.push(comment);
 
-    this._notify(comment, action);
+    this._notify(action, comment);
   }
 
-  deleteComment(id, action) {
+  delete(id, action) {
     const index = this._comments.findIndex((comment) => comment.id === id);
 
     if (index === -1) {
@@ -43,6 +45,35 @@ export default class Comments extends Observer {
       ...this._comments.slice(index + 1),
     ];
 
-    this._notify(id, action);
+    this._notify(action, id);
   }
+
+  static adaptToClient(comment) {
+    const adaptedComment = Object.assign(
+      {},
+      comment,
+      {
+        text: comment.comment,
+      },
+    );
+
+    delete adaptedComment.comment;
+
+    return adaptedComment;
+  }
+
+  static adaptToServer(comment) {
+    const adaptedComment = Object.assign(
+      {},
+      comment,
+      {
+        'comment': comment.text,
+      },
+    );
+
+    delete adaptedComment.text;
+
+    return adaptedComment;
+  }
+
 }

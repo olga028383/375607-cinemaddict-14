@@ -1,3 +1,5 @@
+import {MAX_LENGTH_DESCRIPTION} from './constants.js';
+
 const createElement = (template) => {
   const element = document.createElement('div');
   element.innerHTML = template;
@@ -13,7 +15,7 @@ const getRandom = (min = 0, max = 1) => {
 
 const generateArrayData = (lengthStart, data) => new Array(getRandom(lengthStart, data.length - 1)).fill(null).map(() => data[getRandom(0, data.length - 1)]);
 
-const clipText = (text, length) => (text.length >= length) ? `${text.slice(0, length - 1)}...` : text;
+const clipText = (text) => (text.length >= MAX_LENGTH_DESCRIPTION) ? `${text.slice(0, MAX_LENGTH_DESCRIPTION - 1)}...` : text;
 
 const getRandomKeyFromArray = (data) => data[getRandom(0, data.length - 1)];
 
