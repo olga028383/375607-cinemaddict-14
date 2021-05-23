@@ -1,5 +1,4 @@
 import Observer from '../utils/observer.js';
-import {getId} from '../lib.js';
 
 export default class Comments extends Observer {
   constructor() {
@@ -17,9 +16,9 @@ export default class Comments extends Observer {
     this._notify(updateType);
   }
 
-  add(data, action) {
-    this._comments = data.comments.map(CommentsModel.adaptToClient);
-    this._notify(action);
+  add(action, data, film) {
+    this._comments = data;
+    this._notify(action, film);
   }
 
   delete(id, action) {
@@ -48,7 +47,7 @@ export default class Comments extends Observer {
 
     delete adaptedComment.comment;
 
-    if(comment.movie) {
+    if (comment.movie) {
       delete adaptedComment.movie;
     }
 

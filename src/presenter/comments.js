@@ -12,10 +12,11 @@ import {UserAction, UpdateType} from '../constants.js';
 import {getConnect} from '../utils/api.js';
 
 export default class Comments {
-  constructor(container, updateFilmHandler, closeModalEscKeydownHandler, filmModel) {
+  constructor(container, updateFilmHandler, closeModalEscKeydownHandler, submitFormHandler, filmModel) {
     this._container = container;
     this._updateFilmHandler = updateFilmHandler;
     this._closeModalEscKeydownHandler = closeModalEscKeydownHandler;
+    this._submitFormHandler = submitFormHandler;
     this._filmModel = filmModel;
     this._commentsModel = new CommentsModel();
 
@@ -27,6 +28,7 @@ export default class Comments {
 
     this._viewActionHandler = this._viewActionHandler.bind(this);
     this._modelEventHandler = this._modelEventHandler.bind(this);
+    this._submitFormHandler = this._submitFormHandler.bind(this);
   }
 
   init(film) {
@@ -109,23 +111,32 @@ export default class Comments {
     switch (actionType) {
       case UserAction.DELETE_COMMENT:
         getConnect().deleteComment(data.id).then(() => {
+
           this._commentsModel.delete(data.id, actionType);
+
         }).catch(() => {
+
           this._commentPresenterList[data.id].shake(() => {
             this._commentPresenterList[data.id].updateData({
               isDeleting: false,
-              isDisabled: false
+              isDisabled: false,
             });
             this._commentPresenterList[data.id].setDeleteHandler(this._viewActionHandler);
           });
+
         });
 
         break;
       case UserAction.ADD_COMMENT:
+        document.removeEventListener('keydown', this._submitFormHandler);
+
         getConnect().addComment(data).then((response) => {
-          this._commentsModel.add(response, actionType);
-        }).catch((response) => {
-          this._commentsFormComponent.shake(() => console.log('разблокировать форму'));
+
+          this._commentsModel.add(actionType, response.comments, response.film);
+
+        }).catch(() => {
+
+          this._commentsFormComponent.shake(() => document.addEventListener('keydown', this._submitFormHandler));
         });
 
         break;
@@ -135,11 +146,17 @@ export default class Comments {
   _modelEventHandler(actionType, data) {
     switch (actionType) {
       case UserAction.DELETE_COMMENT:
-        //Здесь не нужно перерисовывать фильм, просто вызвать метод перерисовки
+
+        this._filmModel.updateFilm([UpdateType.FILM], Object.assign(
+          {},
+          this._film,
+          {
+            comments: this._film.comments.filter((comment) => comment !== data),
+          },
+        ));
         break;
       case UserAction.ADD_COMMENT: {
-        //Здесь не нужно перерисовывать фильм, просто вызвать метод перерисовки
-
+        this._filmModel.updateFilm([UpdateType.FILM], data);
         break;
       }
       case UpdateType.INIT:

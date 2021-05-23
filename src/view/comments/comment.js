@@ -12,7 +12,7 @@ const createCommentTemplate = (comment = {}) => {
     emotion = 'smile',
     text = '',
     isDeleting,
-    isDisabled
+    isDisabled,
   } = comment;
   const getWordAction = isDeleting ? 'Deleting...' : 'Delete';
 
@@ -52,7 +52,7 @@ export default class Comment extends Smart {
 
     this.updateData({
       isDeleting: true,
-      isDisabled: true
+      isDisabled: true,
     });
 
     this.callback.delete(UserAction.DELETE_COMMENT, Comment.parseDataToComment(this._data));
@@ -64,7 +64,7 @@ export default class Comment extends Smart {
       comment,
       {
         isDeleting: false,
-        isDisabled: false
+        isDisabled: false,
       },
     );
   }
