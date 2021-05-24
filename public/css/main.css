@@ -1129,3 +1129,17 @@ button {
 .shake {
   animation: shake 0.6s;
 }
+
+.header__logo{
+  position: relative;
+}
+
+.offline{
+  position: absolute;
+  left: 100%;
+  font-size: 13px;
+  width: 100px;
+  top: 50%;
+  margin-top: -7px;
+  padding-left: 10px;
+}
