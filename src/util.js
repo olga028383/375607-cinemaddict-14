@@ -13,15 +13,35 @@ const getRandom = (min = 0, max = 1) => {
   return Math.floor(lower + Math.random() * (upper - lower + 1));
 };
 
+function generateNumbers(min, max) {
+  let randomNumbers = [];
+
+  return () => {
+    let id = getRandom(min, max);
+
+    while (randomNumbers.includes(id)) {
+      id = getRandom(min, max);
+    }
+
+    randomNumbers.push(id);
+
+    return id;
+  };
+}
+
 const generateArrayData = (lengthStart, data) => new Array(getRandom(lengthStart, data.length - 1)).fill(null).map(() => data[getRandom(0, data.length - 1)]);
 
 const clipText = (text) => (text.length >= MAX_LENGTH_DESCRIPTION) ? `${text.slice(0, MAX_LENGTH_DESCRIPTION - 1)}...` : text;
 
 const getRandomKeyFromArray = (data) => data[getRandom(0, data.length - 1)];
 
-function isEscEvent(evt) {
+const isEscEvent = (evt) => {
   return evt.key === 'Escape' || evt.key === 'Esc';
 }
+
+const isOnline = () => {
+  return window.navigator.onLine;
+};
 
 export {
   getRandom,
@@ -29,6 +49,8 @@ export {
   clipText,
   createElement,
   getRandomKeyFromArray,
-  isEscEvent
+  isEscEvent,
+  isOnline,
+  generateNumbers,
 };
 

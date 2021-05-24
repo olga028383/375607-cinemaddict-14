@@ -14,6 +14,7 @@ import FilmPresenter from '../presenter/film.js';
 
 import {render, replace, ContentPosition, remove} from '../utils/render.js';
 import {sortDate} from '../lib.js';
+import {generateNumbers} from '../util.js';
 import {filter} from '../utils/filters.js';
 import {SortType, UserAction, UpdateType, COUNT_FILM_LIST, COUNT_CARD_TOP} from '../constants.js';
 
@@ -101,12 +102,30 @@ export default class FilmList {
   }
 
   _initTopRatingFilmsComponent() {
-    this._filmTopRatingComponent = this._initTopLists('Top rated', this._filmsModel.getSortedByRating().slice(0, COUNT_CARD_TOP), this._filmPresenterListTopRating);
+    let count = 0;
+    const films = this._filmsModel.getSortedByRating().filter((film, key, films) => {
+
+      if(film.rating !== films[count].rating && count < COUNT_CARD_TOP - 1){
+        count++;
+      }
+      return film.rating === films[count].rating;
+    });
+
+    if(films) {
+      this._filmTopRatingComponent = this._initTopLists('Top rated', this._getRandomTopFilms(films), this._filmPresenterListTopRating);
+    }
   }
 
   _initTopCommentsFilmsComponent() {
-    const mostCommentedCard = this._filmsModel.getSortedByComment().slice(0, COUNT_CARD_TOP);
-    this._filmTopCommentsComponent = this._initTopLists('Most commented', mostCommentedCard, this._filmPresenterListTopComments);
+
+    const films = this._filmsModel.getSortedByComment().filter((film, key, films) => {
+      return film.comments.length === films[0].comments.length;
+    });
+
+    if(films){
+      this._filmTopCommentsComponent = this._initTopLists('Most commented', this._getRandomTopFilms(films), this._filmPresenterListTopComments);
+    }
+
   }
 
   _initTopLists(title, films, presenterList) {
@@ -120,6 +139,18 @@ export default class FilmList {
     render(filmsListTopComponent.getElement(), filmsListContainerComponent.getElement(), ContentPosition.BEFOREEND);
 
     return filmsListTopComponent;
+  }
+
+  _getRandomTopFilms(films) {
+    let topCards = [];
+
+    const generate = generateNumbers(0, films.length - 1);
+
+    for (let i = 0; i < COUNT_CARD_TOP; i++) {
+      topCards.push(films[generate()]);
+    }
+
+    return topCards;
   }
 
   _getFilms() {
