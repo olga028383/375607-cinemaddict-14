@@ -61,6 +61,7 @@ export default class Film {
     remove(this._filmComponent);
   }
 
+
   _initFilmComponent(film) {
     this._film = film;
     this._filmComponent = new FilmView(this._film);
@@ -108,7 +109,7 @@ export default class Film {
   }
 
   _initComments(container) {
-    this._commentsPresenter = new CommentsPresenter(container, this._updateFilmHandler, this._closeModalEscKeydownHandler, this._filmModel);
+    this._commentsPresenter = new CommentsPresenter(container, this._updateFilmHandler, this._closeModalEscKeydownHandler, this._submitFormCommentsHandler, this._filmModel);
     this._commentsPresenter.init(this._film);
   }
 

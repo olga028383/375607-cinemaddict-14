@@ -1,4 +1,5 @@
 import {createElement} from '../util.js';
+const SHAKE_ANIMATION_TIMEOUT = 600;
 
 export default class AbstractView {
   constructor() {
@@ -26,11 +27,11 @@ export default class AbstractView {
     this._element = null;
   }
 
-  show() {
-
-  }
-
-  hide(){
-
+  shake(callback) {
+    this.getElement().style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT / 1000}s`;
+    setTimeout(() => {
+      this.getElement().style.animation = '';
+      callback();
+    }, SHAKE_ANIMATION_TIMEOUT);
   }
 }

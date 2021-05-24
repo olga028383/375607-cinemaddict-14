@@ -11,7 +11,7 @@ export default class Films extends Observer {
   }
 
   set(updateType, films) {
-    this._films = films.slice();
+    this._films = films;
     this._notify(updateType);
   }
 

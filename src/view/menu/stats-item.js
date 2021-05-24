@@ -1,6 +1,6 @@
 import AbstractView from '../abstract-view.js';
 
-const StatsItemTemplate = () => {
+const createStatsItemTemplate = () => {
   return ' <a href="#stats" class="main-navigation__additional">Stats</a>';
 };
 
@@ -11,7 +11,7 @@ export default class StatsItem extends AbstractView {
     this._clickHandler = this._clickHandler.bind(this);
   }
   getTemplate() {
-    return StatsItemTemplate();
+    return createStatsItemTemplate();
   }
 
   setClickHandler(callback){
