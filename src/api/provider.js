@@ -1,5 +1,4 @@
 import FilmsModel from '../model/films.js';
-import CommentsModel from '../model/comments.js';
 import {isOnline} from '../util.js';
 
 const getSyncedFilms = (items) => {
@@ -51,33 +50,26 @@ export default class Provider {
 
   getComments(id) {
     if (isOnline()) {
-      return this._api.getComments(id)
-        .then((comments) => {
-          //const items = createStoreStructure(comments.map(CommentsModel.adaptToServer));
-          //this._store.setItems(items);
-          return comments;
-        });
+      return this._api.getComments(id);
     }
 
-    const storeComments = Object.values(this._store.getItems());
-    return Promise.resolve(storeComments.map(CommentsModel.adaptToClient));
+    return Promise.resolve(new Error('Comments list is not available offline'));
   }
 
   addComment(data) {
     if (isOnline()) {
-      return this._api.addComment(data)
-      //Удалить из хранилища
+      return this._api.addComment(data);
     }
+
     return Promise.reject(new Error('You cannot add a comment in the mode offline'));
   }
 
   deleteComment(id) {
     if (isOnline()) {
-      return this._api.deleteComment(data)
-      //Удалить из хранилища
+      return this._api.deleteComment(id);
     }
-    return Promise.reject(new Error('You cannot delete a comment in mode offline'));
 
+    return Promise.reject(new Error('You cannot delete a comment in mode offline'));
   }
 
 

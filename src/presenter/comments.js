@@ -11,7 +11,7 @@ import {UserAction, UpdateType} from '../constants.js';
 
 import {getConnect} from '../utils/api.js';
 import {isOnline} from '../util.js';
-import {toast} from '..//utils/toast.js';
+import {toast} from '../utils/toast.js';
 
 export default class Comments {
   constructor(container, updateFilmHandler, closeModalEscKeydownHandler, submitFormHandler, filmModel) {
@@ -27,6 +27,7 @@ export default class Comments {
     this._commentsFormComponent = null;
     this._commentsListComponent = null;
     this._commentPresenterList = {};
+    this._isShowedToastComments = false;
 
     this._viewActionHandler = this._viewActionHandler.bind(this);
     this._modelEventHandler = this._modelEventHandler.bind(this);
@@ -38,6 +39,7 @@ export default class Comments {
     if (!this._film) {
       this._film = film;
       this._initCommentsModel();
+
       this._renderComments();
 
       render(this._container.getElement(), this._commentsContainerComponent.getElement(), ContentPosition.BEFOREEND);
@@ -79,17 +81,24 @@ export default class Comments {
   }
 
   _renderComments() {
+
     this._commentsContainerComponent = new CommentsContainerView(this._film.comments.length);
     this._commentsFormComponent = new CommentsFormView();
-    this._commentsListComponent = new CommentsListView();
 
-    this._renderCommentsList();
+
+    if (isOnline()) {
+      this._renderCommentsList();
+      this._commentsListComponent = new CommentsListView();
+    } else {
+      this._commentsListComponent = new CommentsListView(false);
+    }
 
     render(this._commentsContainerComponent.getElement(), this._commentsListComponent.getElement(), ContentPosition.BEFOREEND);
     render(this._commentsContainerComponent.getElement(), this._commentsFormComponent.getElement(), ContentPosition.BEFOREEND);
   }
 
   _renderCommentsList() {
+
     this._commentsModel.get().forEach((comment) => {
       this._commentPresenterList[comment.id] = new CommentView(comment);
       this._commentPresenterList[comment.id].setDeleteHandler(this._viewActionHandler);
@@ -112,10 +121,6 @@ export default class Comments {
   _viewActionHandler(actionType, data) {
     switch (actionType) {
       case UserAction.DELETE_COMMENT:
-        // if (!isOnline()) {
-        //   toast('You can\'t delete comment offline');
-        //   return;
-        // }
 
         getConnect().deleteComment(data.id).then(() => {
 
@@ -135,10 +140,10 @@ export default class Comments {
 
         break;
       case UserAction.ADD_COMMENT:
-        // if (!isOnline()) {
-        //   toast('You can\'t add comment offline');
-        //   return;
-        // }
+        if (!isOnline()) {
+          toast('You can\'t add comment offline');
+          return;
+        }
         document.removeEventListener('keydown', this._submitFormHandler);
 
         getConnect().addComment(data).then((response) => {

@@ -14,7 +14,7 @@ const getRandom = (min = 0, max = 1) => {
 };
 
 function generateNumbers(min, max) {
-  let randomNumbers = [];
+  const randomNumbers = [];
 
   return () => {
     let id = getRandom(min, max);
@@ -35,13 +35,9 @@ const clipText = (text) => (text.length >= MAX_LENGTH_DESCRIPTION) ? `${text.sli
 
 const getRandomKeyFromArray = (data) => data[getRandom(0, data.length - 1)];
 
-const isEscEvent = (evt) => {
-  return evt.key === 'Escape' || evt.key === 'Esc';
-}
+const isEscEvent = (evt) => evt.key === 'Escape' || evt.key === 'Esc';
 
-const isOnline = () => {
-  return window.navigator.onLine;
-};
+const isOnline = () => window.navigator.onLine;
 
 export {
   getRandom,
@@ -51,6 +47,6 @@ export {
   getRandomKeyFromArray,
   isEscEvent,
   isOnline,
-  generateNumbers,
+  generateNumbers
 };
 

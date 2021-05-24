@@ -8,7 +8,7 @@ const createNetworkTemplate = (data = {}) => {
 export default class Network extends Smart {
   constructor(isOnline) {
     super();
-    this._data = {isOnline: isOnline}
+    this._data = {isOnline: isOnline};
   }
 
   getTemplate() {

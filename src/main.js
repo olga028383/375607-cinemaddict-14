@@ -60,16 +60,16 @@ getConnect().getFilms()
     filmsModel.set([UpdateType.INIT], []);
   });
 
-// window.addEventListener('load', () => {
-//   navigator.serviceWorker.register('/sw.js');
-// });
+window.addEventListener('load', () => {
+  navigator.serviceWorker.register('/sw.js');
+});
 
 const networkComponent = new NetworkView(true);
 render(logoElement, networkComponent.getElement(), ContentPosition.BEFOREEND);
 
 window.addEventListener('online', () => {
   networkComponent.updateData({
-    isOnline: true
+    isOnline: true,
   });
 
   getConnect().sync();
@@ -77,6 +77,6 @@ window.addEventListener('online', () => {
 
 window.addEventListener('offline', () => {
   networkComponent.updateData({
-    isOnline: false
-  })
+    isOnline: false,
+  });
 });

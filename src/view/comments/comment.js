@@ -1,5 +1,5 @@
 import Smart from '../smart.js';
-import {getDateFormat} from '../../lib.js';
+import {getDateRelativeTime} from '../../lib.js';
 
 import {UserAction} from '../../constants.js';
 
@@ -24,7 +24,7 @@ const createCommentTemplate = (comment = {}) => {
           <p class="film-details__comment-text">${text}</p>
           <p class="film-details__comment-info">
             <span class="film-details__comment-author">${author}</span>
-            <span class="film-details__comment-day">${getDateFormat(date, 'YYYY/DD/MM hh:mm')}</span>
+            <span class="film-details__comment-day">${getDateRelativeTime(date)}</span>
             <button class="film-details__comment-delete" ${isDisabled ? 'disabled' : ''} data-id="${id}">${getWordAction}</button>
           </p>
         </div>
