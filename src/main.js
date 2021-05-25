@@ -16,6 +16,7 @@ import {render, ContentPosition, remove} from './utils/render.js';
 import {getRankUser} from './utils/stats.js';
 
 import {getConnect} from './utils/api.js';
+import {isOnline} from './util.js';
 
 const filmsModel = new FilmsModel();
 const filterModel = new FilterModel();
@@ -64,7 +65,7 @@ window.addEventListener('load', () => {
   navigator.serviceWorker.register('/sw.js');
 });
 
-const networkComponent = new NetworkView(true);
+const networkComponent = isOnline() ? new NetworkView(true) : new NetworkView(false);
 render(logoElement, networkComponent.getElement(), ContentPosition.BEFOREEND);
 
 window.addEventListener('online', () => {

@@ -147,7 +147,7 @@ export default class FilmList {
       return topFilms;
     }
 
-    if (topFilms.length == 0) {
+    if (topFilms.length === 0) {
       return [];
     }
 

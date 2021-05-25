@@ -80,10 +80,9 @@ export default class Provider {
       return this._api.sync(storeFilms)
         .then((response) => {
 
-          const createdFilms = getSyncedFilms(response.created);
           const updatedFilms = getSyncedFilms(response.updated);
 
-          const items = createStoreStructure([...createdFilms, ...updatedFilms]);
+          const items = createStoreStructure([...updatedFilms]);
 
           this._store.setItems(items);
         });
