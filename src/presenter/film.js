@@ -12,11 +12,10 @@ import {UserAction, UpdateType, ENTER_CODE} from '../constants.js';
 import {isEscEvent} from '../util.js';
 
 export default class Film {
-  constructor(container, updateFilmHandler, replaceList, filterModel, filmModel) {
+  constructor(container, updateFilmHandler, replaceList, filmModel) {
     this._container = container;
     this._updateFilmHandler = updateFilmHandler;
     this._replaceList = replaceList;
-    this._filterModel = filterModel;
     this._filmModel = filmModel;
     this._bodyElement = document.body;
 

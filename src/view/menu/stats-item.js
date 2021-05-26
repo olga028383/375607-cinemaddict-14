@@ -1,30 +1,31 @@
 import AbstractView from '../abstract-view.js';
 
-const createStatsItemTemplate = () => {
-  return ' <a href="#stats" class="main-navigation__additional">Stats</a>';
-};
-
 export default class StatsItem extends AbstractView {
-  constructor(){
+  constructor() {
     super();
 
     this._clickHandler = this._clickHandler.bind(this);
   }
+
   getTemplate() {
-    return createStatsItemTemplate();
+    return ' <a href="#stats" class="main-navigation__additional">Stats</a>';
   }
 
-  setClickHandler(callback){
+  setClickHandler(callback) {
     this.callback.click = callback;
     this.getElement().addEventListener('click', this._clickHandler);
   }
 
-  removeActiveClass(){
+  removeActiveClass() {
     this.getElement().classList.remove('main-navigation__additional--active');
   }
 
-  _clickHandler(evt){
+  _clickHandler(evt) {
     evt.preventDefault();
+
+    if (evt.target.classList.contains('main-navigation__additional--active')) {
+      return;
+    }
 
     this.getElement().classList.add('main-navigation__additional--active');
     this.callback.click();

@@ -50,11 +50,20 @@ export default class Filters extends Smart {
   _filterClickHandler(evt) {
     evt.preventDefault();
 
+    let button = evt.target;
+
+    if(button.tagName !== 'A'){
+      button = button.closest('.main-navigation__item');
+    }
+
+    if(this._data.activeFilter === button.dataset.filter && button.classList.contains('main-navigation__item--active')){
+      return;
+    }
+
     this.updateData({
-      activeFilter: evt.target.dataset.filter,
+      activeFilter: button.dataset.filter,
     });
 
-    this.callback.clickFilter(evt.target.dataset.filter);
-
+    this.callback.clickFilter(button.dataset.filter);
   }
 }

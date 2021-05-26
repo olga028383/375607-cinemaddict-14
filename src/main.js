@@ -61,9 +61,9 @@ getConnect().getFilms()
     filmsModel.set([UpdateType.INIT], []);
   });
 
-window.addEventListener('load', () => {
-  navigator.serviceWorker.register('/sw.js');
-});
+// window.addEventListener('load', () => {
+//   navigator.serviceWorker.register('/sw.js');
+// });
 
 const networkComponent = isOnline() ? new NetworkView(true) : new NetworkView(false);
 render(logoElement, networkComponent.getElement(), ContentPosition.BEFOREEND);

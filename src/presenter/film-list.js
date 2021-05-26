@@ -97,7 +97,7 @@ export default class FilmList {
   }
 
   _initFilm(film, container, presentersFilm) {
-    const filmPresenter = new FilmPresenter(container, this._viewActionHandler, this.replaceList, this._filterModel, this._filmsModel);
+    const filmPresenter = new FilmPresenter(container, this._viewActionHandler, this.replaceList, this._filmsModel);
     filmPresenter.init(film);
     presentersFilm[film.id] = filmPresenter;
   }

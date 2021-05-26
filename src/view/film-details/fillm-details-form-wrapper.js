@@ -5,21 +5,17 @@ const createFilmDetailsFormWrapperTemplate = () => {
 };
 
 export default class FilmDetailsFormWrapper extends AbstractView {
-  constructor(){
+  constructor() {
     super();
 
     this._submitFormHandler = this._submitFormHandler.bind(this);
   }
+
   getTemplate() {
     return createFilmDetailsFormWrapperTemplate();
   }
 
-  setSubmitFormHandler(callback){
-    this._callback.submitForm = callback;
-    this.getElement().addEventListener('submit', this._submitFormHandler);
-  }
-
-  _submitFormHandler(evt){
+  _submitFormHandler(evt) {
     evt.preventDefault();
     this._callback.submitForm();
   }

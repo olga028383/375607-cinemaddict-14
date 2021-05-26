@@ -27,7 +27,6 @@ export default class Comments {
     this._commentsFormComponent = null;
     this._commentsListComponent = null;
     this._commentPresenterList = {};
-    this._isShowedToastComments = false;
 
     this._viewActionHandler = this._viewActionHandler.bind(this);
     this._modelEventHandler = this._modelEventHandler.bind(this);
