@@ -1,4 +1,5 @@
 import RankUserView from './view/rank-user.js';
+import NetworkView from './view/network.js';
 
 import MenuView from './view/menu/menu.js';
 import StatsItemView from './view/menu/stats-item.js';
@@ -15,13 +16,14 @@ import {render, ContentPosition, remove} from './utils/render.js';
 import {getRankUser} from './utils/stats.js';
 
 import {getConnect} from './utils/api.js';
+import {isOnline} from './util.js';
 
 const filmsModel = new FilmsModel();
 const filterModel = new FilterModel();
 
 const headerElement = document.querySelector('.header');
+const logoElement = document.querySelector('.logo');
 const mainElement = document.querySelector('.main');
-
 
 const menuElement = new MenuView().getElement();
 const statsItemComponent = new StatsItemView();
@@ -58,3 +60,24 @@ getConnect().getFilms()
   .catch(() => {
     filmsModel.set([UpdateType.INIT], []);
   });
+
+window.addEventListener('load', () => {
+  navigator.serviceWorker.register('/sw.js');
+});
+
+const networkComponent = isOnline() ? new NetworkView(true) : new NetworkView(false);
+render(logoElement, networkComponent.getElement(), ContentPosition.BEFOREEND);
+
+window.addEventListener('online', () => {
+  networkComponent.updateData({
+    isOnline: true,
+  });
+
+  getConnect().sync();
+});
+
+window.addEventListener('offline', () => {
+  networkComponent.updateData({
+    isOnline: false,
+  });
+});

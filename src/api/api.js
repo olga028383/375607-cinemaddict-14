@@ -50,16 +50,24 @@ export default class Api {
       headers: new Headers({'Content-Type': 'application/json'}),
     })
       .then(Api.toJSON)
-      .then((result) => {
-        return {
-          'comments': result.comments.map(CommentsModel.adaptToClient),
-          'film': FilmsModel.adaptToClient(result.movie),
-        };
-      });
+      .then((result) => ({
+        comments: result.comments.map(CommentsModel.adaptToClient),
+        film: FilmsModel.adaptToClient(result.movie),
+      }));
   }
 
   deleteComment(id) {
     return this._load({url: `comments/${id}`, method: Method.DELETE});
+  }
+
+  sync(data) {
+    return this._load({
+      url: '/movies/sync',
+      method: Method.POST,
+      body: JSON.stringify(data),
+      headers: new Headers({'Content-Type': 'application/json'}),
+    })
+      .then(Api.toJSON);
   }
 
   _load({url, method = Method.GET, body = null, headers = new Headers()}) {

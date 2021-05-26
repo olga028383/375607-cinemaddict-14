@@ -55,6 +55,11 @@ const RankNames = {
   'FAN': 'Fan',
 };
 
+const TopFilms = {
+  'RATING': 'RATING',
+  'COMMENTS': 'COMMENTS',
+};
+
 const MAX_LENGTH_DESCRIPTION = 140;
 
 const COUNT_FILM_LIST = 5;
@@ -79,5 +84,6 @@ export {
   COUNT_FILM_LIST,
   COUNT_CARD_TOP,
   BAR_HEIGHT,
-  MIN_TIME
+  MIN_TIME,
+  TopFilms
 };

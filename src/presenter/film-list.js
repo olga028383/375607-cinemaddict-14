@@ -14,8 +14,9 @@ import FilmPresenter from '../presenter/film.js';
 
 import {render, replace, ContentPosition, remove} from '../utils/render.js';
 import {sortDate} from '../lib.js';
+import {generateNumbers} from '../util.js';
 import {filter} from '../utils/filters.js';
-import {SortType, UserAction, UpdateType, COUNT_FILM_LIST, COUNT_CARD_TOP} from '../constants.js';
+import {SortType, UserAction, UpdateType, COUNT_FILM_LIST, COUNT_CARD_TOP, TopFilms} from '../constants.js';
 
 import {getConnect} from '../utils/api.js';
 
@@ -64,7 +65,8 @@ export default class FilmList {
 
     this._renderSort();
     this._filmListComponent = this._renderList(ContentPosition.BEFOREEND);
-    this._renderTopLists();
+    this._renderTopRatingFilms();
+    this._renderTopCommentsFilms();
 
     render(this._mainContainer, this._layoutFilmsComponent.getElement(), ContentPosition.BEFOREEND);
 
@@ -100,13 +102,60 @@ export default class FilmList {
     presentersFilm[film.id] = filmPresenter;
   }
 
-  _initTopRatingFilmsComponent() {
-    this._filmTopRatingComponent = this._initTopLists('Top rated', this._filmsModel.getSortedByRating().slice(0, COUNT_CARD_TOP), this._filmPresenterListTopRating);
+  _renderTopRatingFilms() {
+    const films = this._getTopFilms(this._filmsModel.getSortedByRating(), TopFilms.RATING);
+    if (films.length > 0) {
+      this._filmTopRatingComponent = this._initTopLists('Top rated', films, this._filmPresenterListTopRating);
+      render(this._layoutFilmsComponent.getElement(), this._filmTopRatingComponent.getElement(), ContentPosition.BEFOREEND);
+    }
   }
 
-  _initTopCommentsFilmsComponent() {
-    const mostCommentedCard = this._filmsModel.getSortedByComment().slice(0, COUNT_CARD_TOP);
-    this._filmTopCommentsComponent = this._initTopLists('Most commented', mostCommentedCard, this._filmPresenterListTopComments);
+  _renderTopCommentsFilms() {
+    const films = this._getTopFilms(this._filmsModel.getSortedByComment(), TopFilms.COMMENTS);
+
+    if (films.length > 0) {
+      this._filmTopCommentsComponent = this._initTopLists('Most commented', films, this._filmPresenterListTopComments);
+      render(this._layoutFilmsComponent.getElement(), this._filmTopCommentsComponent.getElement(), ContentPosition.BEFOREEND);
+    }
+  }
+
+  _getTopFilms(films, fieldFilter) {
+    let count = 0;
+    let differentValue = false;
+    const topFilms = films.filter((film, key, films) => {
+
+      switch (fieldFilter) {
+        case TopFilms.RATING:
+          if (film.rating !== films[count].rating && count < COUNT_CARD_TOP - 1) {
+            count++;
+            differentValue = true;
+          }
+
+          return film.rating === films[count].rating;
+        case TopFilms.COMMENTS:
+          if (film.comments.length !== films[count].comments.length && count < COUNT_CARD_TOP - 1) {
+            count++;
+            differentValue = true;
+          }
+
+          return film.comments.length === films[count].comments.length;
+      }
+
+    });
+
+    if (topFilms.length === COUNT_CARD_TOP) {
+      return topFilms;
+    }
+
+    if (topFilms.length === 0) {
+      return [];
+    }
+
+    if (differentValue) {
+      return topFilms.slice(0, COUNT_CARD_TOP);
+    }
+
+    return this._getRandomTopFilms(topFilms);
   }
 
   _initTopLists(title, films, presenterList) {
@@ -120,6 +169,18 @@ export default class FilmList {
     render(filmsListTopComponent.getElement(), filmsListContainerComponent.getElement(), ContentPosition.BEFOREEND);
 
     return filmsListTopComponent;
+  }
+
+  _getRandomTopFilms(films) {
+    const topCards = [];
+
+    const generate = generateNumbers(0, films.length - 1);
+
+    for (let i = 0; i < COUNT_CARD_TOP; i++) {
+      topCards.push(films[generate()]);
+    }
+
+    return topCards;
   }
 
   _getFilms() {
@@ -230,13 +291,6 @@ export default class FilmList {
     }
   }
 
-  _renderTopLists() {
-    this._initTopRatingFilmsComponent();
-    this._initTopCommentsFilmsComponent();
-    render(this._layoutFilmsComponent.getElement(), this._filmTopRatingComponent.getElement(), ContentPosition.BEFOREEND);
-    render(this._layoutFilmsComponent.getElement(), this._filmTopCommentsComponent.getElement(), ContentPosition.BEFOREEND);
-  }
-
   _renderFooter() {
     const footerElement = document.querySelector('.footer');
     this._statsFooterComponent = new StatsFooterView(this._filmsModel.get().length.toLocaleString());
@@ -246,7 +300,7 @@ export default class FilmList {
   _replaceTopCommentedComponent() {
     this._destroyFilms(this._filmPresenterListTopComments);
     const oldComponentTopComments = this._filmTopCommentsComponent;
-    this._initTopCommentsFilmsComponent();
+    this._renderTopCommentsFilms();
     replace(this._filmTopCommentsComponent, oldComponentTopComments);
   }
 
