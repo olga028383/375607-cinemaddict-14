@@ -56,12 +56,12 @@ export default class CommentsForm extends Smart {
   }
 
   setFocusHandler(callback) {
-    this.callback.focus = callback;
+    this._callback.focus = callback;
     this._getFieldText().addEventListener('focus', this._focusHandler);
   }
 
   setBlurHandler(callback) {
-    this.callback.blur = callback;
+    this._callback.blur = callback;
     this._getFieldText().addEventListener('blur', this._blurHandler);
   }
 
@@ -89,12 +89,12 @@ export default class CommentsForm extends Smart {
 
   _focusHandler(evt) {
     evt.preventDefault();
-    this.callback.focus();
+    this._callback.focus();
   }
 
   _blurHandler(evt) {
     evt.preventDefault();
-    this.callback.blur();
+    this._callback.blur();
   }
 
   _textInputHandler(evt) {

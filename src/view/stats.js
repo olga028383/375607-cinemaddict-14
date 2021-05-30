@@ -8,7 +8,7 @@ import {
   getGenresBySort
 } from '../utils/stats.js';
 
-import {PeriodValues, PeriodNames, BAR_HEIGHT} from '../constants.js';
+import {PeriodsValue, PeriodsName, BAR_HEIGHT} from '../constants.js';
 
 const renderChart = (films, element) => {
   const genresBySort = getGenresBySort(films);
@@ -76,10 +76,10 @@ const renderChart = (films, element) => {
 };
 
 const createPeriods = (activeFilter) => {
-  return Object.entries(PeriodValues).map((period) => {
+  return Object.entries(PeriodsValue).map((period) => {
     const checkedItem = activeFilter === period[1] ? 'checked' : '';
     return `<input type="radio" class="statistic__filters-input visually-hidden" name="statistic-filter" id="${period[1]}" value="${period[1]}" ${checkedItem}>
-      <label for="${period[1]}" class="statistic__filters-label">${PeriodNames[period[0]]}</label>`;
+      <label for="${period[1]}" class="statistic__filters-label">${PeriodsName[period[0]]}</label>`;
   }).join('');
 };
 
@@ -168,7 +168,7 @@ export default class Stats extends Smart {
     evt.preventDefault();
 
     const value = evt.target.htmlFor;
-    const films = (PeriodValues.ALL === value) ? this._films : this._films.slice().filter((film) => checkIncludeDataInPeriod(film.watchingDate, value));
+    const films = (PeriodsValue.ALL === value) ? this._films : this._films.slice().filter((film) => checkIncludeDataInPeriod(film.watchingDate, value));
 
     this.updateData({
       films: films,

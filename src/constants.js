@@ -33,7 +33,7 @@ const UpdateType = {
 
 const ENTER_CODE = 13;
 
-const PeriodValues = {
+const PeriodsValue = {
   'ALL': 'all-time',
   'TODAY': 'day',
   'WEEK': 'week',
@@ -41,7 +41,7 @@ const PeriodValues = {
   'YEAR': 'year',
 };
 
-const PeriodNames = {
+const PeriodsName = {
   'ALL': 'All time',
   'TODAY': 'Today',
   'WEEK': 'Week',
@@ -49,13 +49,13 @@ const PeriodNames = {
   'YEAR': 'Year',
 };
 
-const RankNames = {
+const RanksName = {
   'MOVIE_BUFF': 'Movie buff',
   'NOVICE': 'Novice',
   'FAN': 'Fan',
 };
 
-const TopFilms = {
+const TopsFilm = {
   'RATING': 'RATING',
   'COMMENTS': 'COMMENTS',
 };
@@ -77,13 +77,13 @@ export {
   UserAction,
   UpdateType,
   ENTER_CODE,
-  PeriodValues,
-  PeriodNames,
-  RankNames,
+  PeriodsValue,
+  PeriodsName,
+  RanksName,
   MAX_LENGTH_DESCRIPTION,
   COUNT_FILM_LIST,
   COUNT_CARD_TOP,
   BAR_HEIGHT,
   MIN_TIME,
-  TopFilms
+  TopsFilm
 };

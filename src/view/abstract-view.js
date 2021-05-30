@@ -1,4 +1,5 @@
 import {createElement} from '../util.js';
+
 const SHAKE_ANIMATION_TIMEOUT = 600;
 
 export default class AbstractView {
@@ -8,7 +9,7 @@ export default class AbstractView {
     }
 
     this._element = null;
-    this.callback = {};
+    this._callback = {};
   }
 
   getTemplate() {

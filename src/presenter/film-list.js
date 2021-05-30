@@ -16,7 +16,7 @@ import {render, replace, ContentPosition, remove} from '../utils/render.js';
 import {sortDate} from '../lib.js';
 import {generateNumbers} from '../util.js';
 import {filter} from '../utils/filters.js';
-import {SortType, UserAction, UpdateType, COUNT_FILM_LIST, COUNT_CARD_TOP, TopFilms} from '../constants.js';
+import {SortType, UserAction, UpdateType, COUNT_FILM_LIST, COUNT_CARD_TOP, TopsFilm} from '../constants.js';
 
 import {getConnect} from '../utils/api.js';
 
@@ -50,7 +50,7 @@ export default class FilmList {
 
     this._setSortTypeChangeHandler = this._setSortTypeChangeHandler.bind(this);
 
-    this.replaceList = this.replaceList.bind(this);
+    this._replaceList = this._replaceList.bind(this);
   }
 
   init() {
@@ -89,7 +89,7 @@ export default class FilmList {
     this._filterModel.removeObserver(this._modelEventHandler);
   }
 
-  replaceList() {
+  _replaceList() {
     this._clearList();
     this._filmListComponent = this._renderList(ContentPosition.AFTERBEGIN);
 
@@ -97,13 +97,13 @@ export default class FilmList {
   }
 
   _initFilm(film, container, presentersFilm) {
-    const filmPresenter = new FilmPresenter(container, this._viewActionHandler, this.replaceList, this._filmsModel);
+    const filmPresenter = new FilmPresenter(container, this._viewActionHandler, this._replaceList, this._filmsModel);
     filmPresenter.init(film);
     presentersFilm[film.id] = filmPresenter;
   }
 
   _renderTopRatingFilms() {
-    const films = this._getTopFilms(this._filmsModel.getSortedByRating(), TopFilms.RATING);
+    const films = this._getTopFilms(this._filmsModel.getSortedByRating(), TopsFilm.RATING);
     if (films.length > 0) {
       this._filmTopRatingComponent = this._initTopLists('Top rated', films, this._filmPresenterListTopRating);
       render(this._layoutFilmsComponent.getElement(), this._filmTopRatingComponent.getElement(), ContentPosition.BEFOREEND);
@@ -111,7 +111,7 @@ export default class FilmList {
   }
 
   _renderTopCommentsFilms() {
-    const films = this._getTopFilms(this._filmsModel.getSortedByComment(), TopFilms.COMMENTS);
+    const films = this._getTopFilms(this._filmsModel.getSortedByComment(), TopsFilm.COMMENTS);
 
     if (films.length > 0) {
       this._filmTopCommentsComponent = this._initTopLists('Most commented', films, this._filmPresenterListTopComments);
@@ -121,21 +121,17 @@ export default class FilmList {
 
   _getTopFilms(films, fieldFilter) {
     let count = 0;
-    let differentValue = false;
     const topFilms = films.filter((film, key, films) => {
-
       switch (fieldFilter) {
-        case TopFilms.RATING:
+        case TopsFilm.RATING:
           if (film.rating !== films[count].rating && count < COUNT_CARD_TOP - 1) {
             count++;
-            differentValue = true;
           }
 
           return film.rating === films[count].rating;
-        case TopFilms.COMMENTS:
+        case TopsFilm.COMMENTS:
           if (film.comments.length !== films[count].comments.length && count < COUNT_CARD_TOP - 1) {
             count++;
-            differentValue = true;
           }
 
           return film.comments.length === films[count].comments.length;
@@ -151,11 +147,11 @@ export default class FilmList {
       return [];
     }
 
-    if (differentValue) {
-      return topFilms.slice(0, COUNT_CARD_TOP);
+    if (topFilms.length === films.length) {
+      this._getRandomTopFilms(topFilms);
     }
 
-    return this._getRandomTopFilms(topFilms);
+    return topFilms.slice(0, COUNT_CARD_TOP);
   }
 
   _initTopLists(title, films, presenterList) {
@@ -172,15 +168,8 @@ export default class FilmList {
   }
 
   _getRandomTopFilms(films) {
-    const topCards = [];
-
     const generate = generateNumbers(0, films.length - 1);
-
-    for (let i = 0; i < COUNT_CARD_TOP; i++) {
-      topCards.push(films[generate()]);
-    }
-
-    return topCards;
+    return new Array(COUNT_CARD_TOP).fill(null).map(() => films[generate()]);
   }
 
   _getFilms() {
@@ -245,11 +234,7 @@ export default class FilmList {
     remove(this._filmListComponent);
     remove(this._buttonMoreComponent);
 
-    if (resetRenderedFilmsCount) {
-      this._showedFilms = COUNT_FILM_LIST;
-    } else {
-      this._showedFilms = Math.min(filmsCount, this._showedFilms);
-    }
+    this._showedFilms = (resetRenderedFilmsCount) ? COUNT_FILM_LIST : Math.min(filmsCount, this._showedFilms);
 
     if (resetSortType) {
       this._currentSortType = SortType.DEFAULT;

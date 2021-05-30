@@ -34,7 +34,7 @@ export default class Filters extends Smart {
   }
 
   setFiltersClickHandler(callback) {
-    this.callback.clickFilter = callback;
+    this._callback.clickFilter = callback;
     this.getElement().querySelectorAll('.main-navigation__item').forEach((item) => item.addEventListener('click', this._filterClickHandler));
   }
 
@@ -64,6 +64,6 @@ export default class Filters extends Smart {
       activeFilter: button.dataset.filter,
     });
 
-    this.callback.clickFilter(button.dataset.filter);
+    this._callback.clickFilter(button.dataset.filter);
   }
 }

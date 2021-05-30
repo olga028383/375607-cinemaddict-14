@@ -13,7 +13,7 @@ const getRandom = (min = 0, max = 1) => {
   return Math.floor(lower + Math.random() * (upper - lower + 1));
 };
 
-function generateNumbers(min, max) {
+const generateNumbers = (min, max) => {
   const randomNumbers = [];
 
   return () => {
@@ -27,7 +27,7 @@ function generateNumbers(min, max) {
 
     return id;
   };
-}
+};
 
 const clipText = (text) => (text.length >= MAX_LENGTH_DESCRIPTION) ? `${text.slice(0, MAX_LENGTH_DESCRIPTION - 1)}...` : text;
 

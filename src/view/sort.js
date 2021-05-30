@@ -20,7 +20,7 @@ export default class Sort extends AbstractView {
   }
 
   setSortTypeChangeHandler(callback) {
-    this.callback.sortTypeChange = callback;
+    this._callback.sortTypeChange = callback;
     this.getElement().addEventListener('click', this._sortTypeChangeHandler);
   }
 
@@ -30,7 +30,7 @@ export default class Sort extends AbstractView {
     }
 
     evt.preventDefault();
-    this.callback.sortTypeChange(evt.target.dataset.sortType);
+    this._callback.sortTypeChange(evt.target.dataset.sortType);
 
     const currentButton = this.getElement().querySelector('.sort__button--active');
     currentButton.classList.remove('sort__button--active');

@@ -8,11 +8,11 @@ export default class StatsItem extends AbstractView {
   }
 
   getTemplate() {
-    return ' <a href="#stats" class="main-navigation__additional">Stats</a>';
+    return '<a href="#stats" class="main-navigation__additional">Stats</a>';
   }
 
   setClickHandler(callback) {
-    this.callback.click = callback;
+    this._callback.click = callback;
     this.getElement().addEventListener('click', this._clickHandler);
   }
 
@@ -28,7 +28,7 @@ export default class StatsItem extends AbstractView {
     }
 
     this.getElement().classList.add('main-navigation__additional--active');
-    this.callback.click();
+    this._callback.click();
   }
 
 }

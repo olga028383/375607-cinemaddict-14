@@ -43,7 +43,7 @@ export default class Comment extends Smart {
   }
 
   setDeleteHandler(callback) {
-    this.callback.delete = callback;
+    this._callback.delete = callback;
     this.getElement().querySelector('.film-details__comment-delete').addEventListener('click', this._deleteHandler);
   }
 
@@ -55,7 +55,7 @@ export default class Comment extends Smart {
       isDisabled: true,
     });
 
-    this.callback.delete(UserAction.DELETE_COMMENT, Comment.parseDataToComment(this._data));
+    this._callback.delete(UserAction.DELETE_COMMENT, Comment.parseDataToComment(this._data));
   }
 
   static parseCommentToData(comment) {

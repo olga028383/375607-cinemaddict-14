@@ -20,7 +20,7 @@ export default class FilmDetailsTop extends AbstractView {
   }
 
   setClickHandler(callback) {
-    this.callback.click = callback;
+    this._callback.click = callback;
 
     this._close = this.getElement().querySelector('.film-details__close-btn');
     this._close.addEventListener('click', this._clickHandler);
@@ -28,6 +28,6 @@ export default class FilmDetailsTop extends AbstractView {
 
   _clickHandler(evt) {
     evt.preventDefault();
-    this.callback.click();
+    this._callback.click();
   }
 }

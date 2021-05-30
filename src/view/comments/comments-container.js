@@ -9,10 +9,10 @@ const createCommentsContainerTemplate = (count) => {
 export default class CommentsContainer extends AbstractView {
   constructor(countComments) {
     super();
-    this.count = countComments;
+    this._count = countComments;
   }
 
   getTemplate() {
-    return createCommentsContainerTemplate(this.count);
+    return createCommentsContainerTemplate(this._count);
   }
 }

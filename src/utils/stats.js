@@ -1,4 +1,4 @@
-import {RankNames, MIN_TIME} from '../constants.js';
+import {RanksName, MIN_TIME} from '../constants.js';
 
 const countTimeLengthWatch = (films) => {
   return films.reduce((accumulator, currentValue) => {
@@ -11,11 +11,11 @@ const getRankUser = (films) => {
   const filmsLength = films.length;
 
   if (filmsLength >= 1 && filmsLength <= 10) {
-    return RankNames.NOVICE;
+    return RanksName.NOVICE;
   } else if (filmsLength >= 11 && filmsLength <= 20) {
-    return RankNames.FAN;
+    return RanksName.FAN;
   } else if (filmsLength >= 21) {
-    return RankNames.MOVIE_BUFF;
+    return RanksName.MOVIE_BUFF;
   }
 
   return 0;
